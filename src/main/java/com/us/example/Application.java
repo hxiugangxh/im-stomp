@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import static org.springframework.boot.SpringApplication.run;
 
-@ComponentScan(basePackages = "com.us.example")
+@ComponentScan(basePackages = {"com.us.example", "com.hxg"})
 @SpringBootApplication
 @EnableScheduling
 public class Application {

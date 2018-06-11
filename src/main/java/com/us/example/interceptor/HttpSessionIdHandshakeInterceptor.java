@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
@@ -31,15 +33,17 @@ public class HttpSessionIdHandshakeInterceptor extends HttpSessionHandshakeInter
         if (request instanceof ServletServerHttpRequest) {
             ServletServerHttpRequest servletRequest = (ServletServerHttpRequest) request;
             HttpSession session = servletRequest.getServletRequest().getSession(false);
-            String accountId = session.getAttribute(Constants.SKEY_ACCOUNT_ID) + "";
-            System.out.println("accountId = " + accountId);
-            System.out.println(session.getAttributeNames());
+            UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+
+            String accountId = userDetails.getUsername();
             //把session和accountId存放起来
             attributes.put(Constants.SESSIONID, session.getId());
             attributes.put(Constants.SKEY_ACCOUNT_ID, accountId);
         }
 
-        System.out.println("Before Handshake");
+//        System.out.println("Before Handshake");
         return super.beforeHandshake(request, response, wsHandler, attributes);
     }
 
@@ -47,7 +51,7 @@ public class HttpSessionIdHandshakeInterceptor extends HttpSessionHandshakeInter
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
                                Exception ex) {
 
-        System.out.println("After Handshake");
+//        System.out.println("After Handshake");
         super.afterHandshake(request, response, wsHandler, ex);
     }
 

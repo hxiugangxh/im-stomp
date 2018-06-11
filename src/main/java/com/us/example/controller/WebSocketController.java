@@ -1,9 +1,13 @@
 package com.us.example.controller;
 
 import com.us.example.bean.Message;
+import com.us.example.bean.OnLineBean;
 import com.us.example.bean.Response;
+import com.us.example.constant.CacheConstant;
 import com.us.example.service.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by yangyibo on 16/12/29.
@@ -30,15 +36,39 @@ public class WebSocketController {
     @Autowired
     private SimpUserRegistry simpUserRegistry;
 
-    @RequestMapping("/templateTest")
-    @ResponseBody
-    public Integer templateTest() {
+    @Autowired
+    private CacheManager cacheManager;
 
+    @RequestMapping("/test")
+    @ResponseBody
+    public String test() {
+
+        //存放至ehcache
+        String cacheName = CacheConstant.WEBSOCKET_ACCOUNT;
+
+        Cache cache = cacheManager.getCache(cacheName);
+
+        String sessionId = cache.get("websocket_accountadmin", String.class);
+
+        System.out.println(sessionId);
+
+        return "test";
+    }
+
+    @RequestMapping("/listOnline")
+    @ResponseBody
+    public List<OnLineBean> listOnline() {
+
+        List<OnLineBean> onLineBeanList = new ArrayList<>();
         for (SimpUser user : simpUserRegistry.getUsers()) {
-            System.out.println(user);
+            OnLineBean onLineBean = new OnLineBean();
+
+            onLineBean.setName(user.getName());
+
+            onLineBeanList.add(onLineBean);
         }
 
-        return simpUserRegistry.getUsers().size();
+        return onLineBeanList;
     }
 
     @RequestMapping(value = "/login")
