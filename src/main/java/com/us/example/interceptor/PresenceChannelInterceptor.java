@@ -2,7 +2,6 @@ package com.us.example.interceptor;
 
 import com.us.example.constant.CacheConstant;
 import com.us.example.constant.Constants;
-import com.us.example.util.EhCacheUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.ehcache.Element;
 import org.springframework.beans.factory.annotation.Autowired;

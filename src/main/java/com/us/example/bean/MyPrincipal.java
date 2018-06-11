@@ -1,7 +1,5 @@
 package com.us.example.bean;
 
-import lombok.Data;
-
 import java.security.Principal;
 
 public final class MyPrincipal implements Principal {

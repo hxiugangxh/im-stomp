@@ -1,9 +1,5 @@
 package com.us.example;
 
-/**
- * Created by yangyibo on 16/12/29.
- */
-
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;

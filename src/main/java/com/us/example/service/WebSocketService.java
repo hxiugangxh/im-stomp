@@ -1,9 +1,5 @@
 package com.us.example.service;
 
-/**
- * Created by yangyibo on 17/1/12.
- */
-
 import com.us.example.bean.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

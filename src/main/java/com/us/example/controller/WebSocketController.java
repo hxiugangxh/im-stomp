@@ -22,9 +22,6 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by yangyibo on 16/12/29.
- */
 @CrossOrigin
 @Controller
 public class WebSocketController {
