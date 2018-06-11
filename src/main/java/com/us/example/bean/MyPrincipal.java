@@ -2,11 +2,11 @@ package com.us.example.bean;
 
 import java.security.Principal;
 
-public final class User implements Principal {
+public final class MyPrincipal implements Principal {
 
     private final String name;
 
-    public User(String name) {
+    public MyPrincipal(String name) {
         this.name = name;
     }
 
