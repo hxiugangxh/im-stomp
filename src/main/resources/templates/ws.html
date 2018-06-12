@@ -38,11 +38,10 @@
       setConnected(true);
       console.log('Connected: ' + frame);
       stompClient.subscribe('/topic/getResponse', function(respnose){ //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
-        showResponse(JSON.parse(respnose.body).responseMessage);
+        showResponse(JSON.parse(respnose.body).msg);
       });
     });
   }
-
 
   function disconnect() {
     if (stompClient != null) {

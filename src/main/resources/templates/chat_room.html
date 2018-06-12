@@ -104,7 +104,7 @@
       <input type="text" id="mess" style="margin:0;width:100%;height:40px;outline:none;"/>
     </div>
     <div class="col-xs-2" style="padding:0;">
-      <button id="sendBtn" style="height:40px;width:100%;outline:none;line-height:40px;">send</button>
+      <button onclick="sendMessage()" style="height:40px;width:100%;outline:none;line-height:40px;">send</button>
     </div>
   </div>
 </div>
@@ -116,18 +116,16 @@
 <script th:inline="javascript">
   /*<![CDATA[*/
   //链接endpoint名称为 "/endpointChat" 的endpoint。
-  var sock = new SockJS("/endpointWisely");
-  var stompClient = Stomp.over(sock);
-
-  stompClient.connect({}, function (frame) {//链接Web Socket的服务端。
-    stompClient.subscribe('/topic/response', function (respnose) {
-      //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
-      showResponse(JSON.parse(respnose.body).responseMessage);
+  var socket = new SockJS('/endpointWisely'); //链接SockJS 的endpoint 名称为"/endpointWisely"
+  stompClient = Stomp.over(socket);//使用stomp子协议的WebSocket 客户端
+  stompClient.connect({}, function(frame) {//链接Web Socket的服务端。
+    stompClient.subscribe('/topic/getResponse', function(respnose){ //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
+      showResponse(JSON.parse(respnose.body).msg);
     });
   });
 
   function sendMessage() {
-    stompClient.send("/groupChat", {}, JSON.stringify({'msg': $("#msg").val()}));
+    stompClient.send("/welcome", {}, JSON.stringify({ 'msg': name }));
   }
 
   function showResponse(message) {
