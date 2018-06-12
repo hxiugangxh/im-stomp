@@ -4,6 +4,8 @@ import com.us.example.bean.ChatUserBean;
 import com.us.example.bean.GroupChatMessage;
 import com.us.example.constant.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -29,11 +31,25 @@ public class ImController {
     @Autowired
     private SimpUserRegistry simpUserRegistry;
 
+    @Autowired
+    private CacheManager cacheManager;
+
+    @RequestMapping("/look")
+    @ResponseBody
+    public String look() {
+
+        Cache cache = cacheManager.getCache("websocket_account");
+
+        System.out.println("admin = " + cache.get("websocket_accountadmin", String.class));
+        System.out.println("abel = " + cache.get("websocket_accountabel", String.class));
+
+        return "test";
+    }
+
     @RequestMapping("/chatRoom")
     public String chatRoom(Map<String, Object> map, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        Integer userCount = simpUserRegistry.getUserCount();
         String userName = userDetails.getUsername();
         ChatUserBean chatUserBean = new ChatUserBean();
         chatUserBean.setUserName(userName);
@@ -47,20 +63,19 @@ public class ImController {
         chatUserBean.setNick(nick);
 
         map.put("chatUserBean", chatUserBean);
-        map.put("userCount", userCount);
-
-        // 广播在线人数
-        brokerOnline();
 
         return "chat_room";
     }
 
-    public void brokerOnline() {
+    @RequestMapping("/brokerOnline")
+    @ResponseBody
+    public String brokerOnline() {
         GroupChatMessage groupChatMessage = new GroupChatMessage();
-        groupChatMessage.setType(1);
         groupChatMessage.setUserCount(simpUserRegistry.getUserCount());
 
-        simpMessagingTemplate.convertAndSend(Constants.GROUP_CHAT_DES, groupChatMessage);
+        simpMessagingTemplate.convertAndSend("/topic/online", groupChatMessage);
+
+        return "test";
     }
 
     @RequestMapping("/groupChat")

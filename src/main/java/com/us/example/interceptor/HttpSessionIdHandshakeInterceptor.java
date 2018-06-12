@@ -1,10 +1,15 @@
 package com.us.example.interceptor;
 
+import com.us.example.bean.GroupChatMessage;
 import com.us.example.constant.Constants;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
+import org.springframework.messaging.MessageChannel;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -15,11 +20,11 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
-     * websocket握手（handshake）接口
+ * websocket握手（handshake）接口
  */
 @Slf4j
 @Component
-public class HttpSessionIdHandshakeInterceptor extends HttpSessionHandshakeInterceptor  {
+public class HttpSessionIdHandshakeInterceptor extends HttpSessionHandshakeInterceptor {
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,
