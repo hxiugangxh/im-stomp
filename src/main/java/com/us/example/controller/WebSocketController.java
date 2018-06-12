@@ -3,6 +3,7 @@ package com.us.example.controller;
 import com.us.example.bean.Message;
 import com.us.example.bean.OnLineBean;
 import com.us.example.bean.GroupChatMessage;
+import com.us.example.bean.Response;
 import com.us.example.constant.CacheConstant;
 import com.us.example.service.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,9 +87,9 @@ public class WebSocketController {
     //http://localhost:8080/ws
     @MessageMapping("/welcome")//浏览器发送请求通过@messageMapping 映射/welcome 这个地址。
     @SendTo("/topic/getResponse")//服务器端有消息时,会订阅@SendTo 中的路径的浏览器发送消息。
-    public GroupChatMessage say(Message message) throws Exception {
+    public Response say(Message message) throws Exception {
         Thread.sleep(1000);
-        return new GroupChatMessage("Welcome, " + message.getMsg() + "!");
+        return new Response("Welcome, " + message.getMsg() + "!");
     }
 
     @MessageMapping("/testSend")

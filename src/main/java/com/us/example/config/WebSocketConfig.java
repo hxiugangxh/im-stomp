@@ -23,9 +23,13 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) { //endPoint 注册协议节点,并映射指定的URl
 
+        //注册一个Stomp 协议的endpoint,并指定 SockJS协议
+        registry.addEndpoint("/endpointWisely").withSockJS()
+                .setInterceptors(httpSessionIdHandshakeInterceptor());
+
         //注册一个名字为"endpointChat" 的endpoint,并指定 SockJS协议。   点对点-用
-        registry.addEndpoint("endpointWisely","/endpointChat").withSockJS()
-            .setInterceptors(httpSessionIdHandshakeInterceptor());
+        registry.addEndpoint("/endpointChat").withSockJS()
+                .setInterceptors(httpSessionIdHandshakeInterceptor());
     }
 
     @Override

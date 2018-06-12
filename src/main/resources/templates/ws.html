@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <title>Spring Boot+WebSocket+广播式</title>
 
 </head>
@@ -13,7 +13,7 @@
     <button id="disconnect" disabled="disabled" onclick="disconnect();">断开连接</button>
   </div>
   <div id="conversationDiv">
-    <label>输入你的名字</label><input type="text" id="name"/>
+    <label>输入你的名字</label><input type="text" id="name" />
     <button id="sendName" onclick="sendName();">发送</button>
     <p id="response"></p>
   </div>
@@ -34,11 +34,10 @@
   function connect() {
     var socket = new SockJS('/endpointWisely'); //链接SockJS 的endpoint 名称为"/endpointWisely"
     stompClient = Stomp.over(socket);//使用stomp子协议的WebSocket 客户端
-    stompClient.connect({}, function (frame) {//链接Web Socket的服务端。
+    stompClient.connect({}, function(frame) {//链接Web Socket的服务端。
       setConnected(true);
       console.log('Connected: ' + frame);
-      stompClient.subscribe('/topic/re', function (respnose) {
-        //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
+      stompClient.subscribe('/topic/getResponse', function(respnose){ //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
         showResponse(JSON.parse(respnose.body).responseMessage);
       });
     });
@@ -56,12 +55,12 @@
   function sendName() {
     var name = $('#name').val();
     //通过stompClient.send 向/welcome 目标 发送消息,这个是在控制器的@messageMapping 中定义的。
-    stompClient.send("/welcome", {}, JSON.stringify({'msg': name}));
+    stompClient.send("/welcome", {}, JSON.stringify({ 'msg': name }));
   }
 
   function showResponse(message) {
     var response = $("#response");
-    response.append(message);
+    response.html(message);
   }
 </script>
 </body>

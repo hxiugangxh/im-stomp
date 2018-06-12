@@ -13,6 +13,8 @@ public class GroupChatMessage {
     private Date sendTime; // 发送时间
     private Date reviceTime; // 接收时间
 
+    public GroupChatMessage() {}
+
     public GroupChatMessage(String msg) {
         this.msg = msg;
     }
