@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,25 +26,41 @@ public class ImController {
     @Autowired
     private SimpMessagingTemplate simpMessagingTemplate;
 
+    @Autowired
+    private SimpUserRegistry simpUserRegistry;
+
     @RequestMapping("/chatRoom")
     public String chatRoom(Map<String, Object> map, Authentication authentication) {
-
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
+        Integer userCount = simpUserRegistry.getUserCount();
+        String userName = userDetails.getUsername();
         ChatUserBean chatUserBean = new ChatUserBean();
-        chatUserBean.setUserName(userDetails.getUsername());
+        chatUserBean.setUserName(userName);
 
         String nick = "";
         if (userDetails.getUsername().equals("admin")) {
             nick = "管理员";
         } else {
-            nick = "路人" + userDetails.getUsername();
+            nick = "路人" + userName;
         }
         chatUserBean.setNick(nick);
-        // 改成成登录信息
+
         map.put("chatUserBean", chatUserBean);
+        map.put("userCount", userCount);
+
+        // 广播在线人数
+        brokerOnline();
 
         return "chat_room";
+    }
+
+    public void brokerOnline() {
+        GroupChatMessage groupChatMessage = new GroupChatMessage();
+        groupChatMessage.setType(1);
+        groupChatMessage.setUserCount(simpUserRegistry.getUserCount());
+
+        simpMessagingTemplate.convertAndSend(Constants.GROUP_CHAT_DES, groupChatMessage);
     }
 
     @RequestMapping("/groupChat")
@@ -58,5 +75,7 @@ public class ImController {
 
         return "test";
     }
+
+
 
 }

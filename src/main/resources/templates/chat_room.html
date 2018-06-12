@@ -68,7 +68,7 @@
 
     <div class="col-sm-12" id="top">
       <div style="color:#fff;">
-        在线人数：<span id="userCount" style="color:#fff;">11220</span> 人
+        在线人数：<span id="userCount" style="color:#fff;" th:text="${userCount}"></span> 人
       </div>
     </div>
   </div>
@@ -128,15 +128,25 @@
   stompClient.connect({}, function (frame) {//链接Web Socket的服务端。
     stompClient.subscribe('/topic/getResponse', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
       var groupChatMessage = JSON.parse(respnose.body);
-      if (groupChatMessage.userName == chatUserBean.userName) {
-        groupChatMessage.clazz = "myself";
-      } else {
-        groupChatMessage.clazz = "";
-      }
 
-      showResponse(groupChatMessage);
+      if (groupChatMessage.type == "1") {
+        $("#userCount").html(groupChatMessage.userCount);
+      } else {
+        if (groupChatMessage.userName == chatUserBean.userName) {
+          groupChatMessage.clazz = "myself";
+        } else {
+          groupChatMessage.clazz = "";
+        }
+
+        showResponse(groupChatMessage);
+      }
     });
   });
+
+  function brokerOnline() {
+    var URL = "/brokerOnline";
+    $.post(URL);
+  }
 
   function sendMessage() {
     var msg = $("#msg").val();

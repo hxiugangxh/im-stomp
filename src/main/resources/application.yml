@@ -17,5 +17,5 @@ imooc:
   security:
     browser:
       signInResponseType: REDIRECT
-      singInSuccessUrl: /chat
+      singInSuccessUrl: /chatRoom
       signInPage: /login
