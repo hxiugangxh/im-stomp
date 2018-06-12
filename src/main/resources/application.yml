@@ -3,16 +3,19 @@ spring:
     store-type: none
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost/hxg?useUnicode=yes&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://localhost/webqq?useUnicode=yes&characterEncoding=UTF-8&useSSL=false
     username: root
     password: 123456
   redis:
     host: localhost
 server:
   port: 8090
+  session:
+    timeout: 3600
 
 imooc:
   security:
     browser:
       signInResponseType: REDIRECT
       singInSuccessUrl: /chat
+      signInPage: /login

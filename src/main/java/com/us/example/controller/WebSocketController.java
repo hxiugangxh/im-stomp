@@ -2,7 +2,7 @@ package com.us.example.controller;
 
 import com.us.example.bean.Message;
 import com.us.example.bean.OnLineBean;
-import com.us.example.bean.Response;
+import com.us.example.bean.GroupChatMessage;
 import com.us.example.constant.CacheConstant;
 import com.us.example.service.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -47,6 +45,8 @@ public class WebSocketController {
 
         String sessionId = cache.get("websocket_accountadmin", String.class);
 
+        System.out.println(sessionId);
+        sessionId = cache.get("websocket_accountabel", String.class);
         System.out.println(sessionId);
 
         return "test";
@@ -86,9 +86,16 @@ public class WebSocketController {
     //http://localhost:8080/ws
     @MessageMapping("/welcome")//浏览器发送请求通过@messageMapping 映射/welcome 这个地址。
     @SendTo("/topic/getResponse")//服务器端有消息时,会订阅@SendTo 中的路径的浏览器发送消息。
-    public Response say(Message message) throws Exception {
+    public GroupChatMessage say(Message message) throws Exception {
         Thread.sleep(1000);
-        return new Response("Welcome, " + message.getName() + "!");
+        return new GroupChatMessage("Welcome, " + message.getMsg() + "!");
+    }
+
+    @MessageMapping("/testSend")
+    @SendTo("/topic/getResponse")
+    public GroupChatMessage testSend() throws Exception {
+
+        return new GroupChatMessage("/topic/getResponse测试");
     }
 
     //http://localhost:8080/Welcome1
@@ -102,6 +109,7 @@ public class WebSocketController {
     @MessageMapping("/chat")
     //在springmvc 中可以直接获得principal,principal 中包含当前用户的信息
     public void handleChat(Principal principal, Message message) {
+        System.out.println(message);
 
         /**
          * 此处是一段硬编码。如果发送人是wyf 则发送给 wisely 如果发送人是wisely 就发送给 wyf。
@@ -110,10 +118,9 @@ public class WebSocketController {
         if (principal.getName().equals("admin")) {
             //通过convertAndSendToUser 向用户发送信息,
             // 第一个参数是接收消息的用户,第二个参数是浏览器订阅的地址,第三个参数是消息本身
-
             messagingTemplate.convertAndSendToUser("abel",
                     "/queue/notifications", principal.getName() + "-send:"
-                            + message.getName());
+                            + message.getMsg());
             /**
              * 72 行操作相等于 
              * messagingTemplate.convertAndSend("/user/abel/queue/notifications",principal.getName() + "-send:"
@@ -122,7 +129,7 @@ public class WebSocketController {
         } else {
             messagingTemplate.convertAndSendToUser("admin",
                     "/queue/notifications", principal.getName() + "-send:"
-                            + message.getName());
+                            + message.getMsg());
         }
     }
 }

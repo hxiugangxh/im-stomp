@@ -52,16 +52,7 @@ public class PresenceChannelInterceptor extends ChannelInterceptorAdapter {
         //存放至ehcache
         String cacheName = CacheConstant.WEBSOCKET_ACCOUNT;
         //若在多个浏览器登录，直接覆盖保存
-        Cache cache = cacheManager.getCache("websocket_account");
-
-        Element e = new Element(cacheName + accountId, sessionId);
-        cache.put(cacheName + accountId, sessionId);
-
-        System.out.println("key = " + cacheName + accountId);
-        System.out.println("value = " + sessionId);
-        System.out.println(cache.get(cacheName + accountId));
-
-        System.out.println(cache);
+        cacheManager.getCache(cacheName).put(cacheName + accountId, sessionId);
     }
 
     private void disconnect(String sessionId, String accountId) {

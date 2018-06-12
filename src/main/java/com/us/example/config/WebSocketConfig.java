@@ -2,7 +2,6 @@ package com.us.example.config;
 
 import com.us.example.interceptor.HttpSessionIdHandshakeInterceptor;
 import com.us.example.interceptor.PresenceChannelInterceptor;
-import com.us.example.interceptor.SessionAuthHandshakeInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -24,11 +23,8 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) { //endPoint 注册协议节点,并映射指定的URl
 
-        //注册一个Stomp 协议的endpoint,并指定 SockJS协议
-        registry.addEndpoint("/endpointWisely").withSockJS();
-
         //注册一个名字为"endpointChat" 的endpoint,并指定 SockJS协议。   点对点-用
-        registry.addEndpoint("/endpointChat").withSockJS()
+        registry.addEndpoint("endpointWisely","/endpointChat").withSockJS()
             .setInterceptors(httpSessionIdHandshakeInterceptor());
     }
 
@@ -68,11 +64,6 @@ public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
     @Bean
     public PresenceChannelInterceptor presenceChannelInterceptor() {
         return new PresenceChannelInterceptor();
-    }
-
-    @Bean
-    public SessionAuthHandshakeInterceptor sessionAuthHandshakeInterceptor() {
-        return new SessionAuthHandshakeInterceptor();
     }
 
 }
