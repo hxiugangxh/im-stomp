@@ -6,7 +6,7 @@ import java.util.Date;
 
 @Data
 public class GroupChatMessage {
-    private String user; // 用户
+    private String userName; // 用户
     private String nick; // 名称
     private String online; // 0：离线；1：在线
     private String msg; // 消息

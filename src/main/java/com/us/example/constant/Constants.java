@@ -12,5 +12,8 @@ public class Constants {
      */
     public static final String SKEY_ACCOUNT_ID = "accountId";
 
-
+    /**
+     * 群聊地址
+     */
+    public static final String GROUP_CHAT_DES = "/topic/getResponse";
 }
