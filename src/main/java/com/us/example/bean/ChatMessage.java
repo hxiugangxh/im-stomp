@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class GroupChatMessage {
+public class ChatMessage {
     private Integer type; // 0: 聊天；1；在线人数
     private String userName; // 用户
     private String nick; // 名称
@@ -15,9 +15,9 @@ public class GroupChatMessage {
     private Date reviceTime; // 接收时间
     private Integer userCount; // 在线人数
 
-    public GroupChatMessage() {}
+    public ChatMessage() {}
 
-    public GroupChatMessage(String msg) {
+    public ChatMessage(String msg) {
         this.msg = msg;
     }
 }

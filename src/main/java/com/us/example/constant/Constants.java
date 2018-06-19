@@ -18,7 +18,7 @@ public class Constants {
     public static final String GROUP_CHAT_DES = "/topic/getResponse";
 
     /**
-     * 在线人数广播
+     * 在线信息广播
      */
-    public static final String USER_COUNT_ONLINE = "/topic/online";
+    public static final String USER_ONLINE_INFO = "/topic/online";
 }

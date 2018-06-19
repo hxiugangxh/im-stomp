@@ -23,6 +23,14 @@
     .myself {
       text-align: right;
     }
+
+    .red {
+      color: red;
+    }
+
+    .gray {
+      color: #ddd;
+    }
   </style>
 
 </head>
@@ -74,26 +82,8 @@
   </div>
   <div class="row">
     <div class="col-sm-2" style="padding: 0">
-      <ul class="list-group ul-top" id="onLineContent" style="overflow: auto;margin: 0">
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
-        <li class="list-group-item">123</li>
+      <ul class="list-group ul-top" id="imUserList" style="overflow: auto;margin: 0">
+        <!--<li class="list-group-item">123</li>-->
       </ul>
     </div>
     <div class="col-sm-10" style="padding: 0">
@@ -122,7 +112,7 @@
 <script th:inline="javascript">
   /*<![CDATA[*/
   //链接endpoint名称为 "/endpointChat" 的endpoint。
-  var chatUserBean = [[${chatUserBean}]];
+  var imUser = [[${imUser}]];
   var socket = new SockJS('/endpointWisely'); //链接SockJS 的endpoint 名称为"/endpointWisely"
   stompClient = Stomp.over(socket);//使用stomp子协议的WebSocket 客户端
   stompClient.connect({}, function (frame) {//链接Web Socket的服务端。
@@ -130,7 +120,7 @@
       stompClient.subscribe('/topic/getResponse', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
         var groupChatMessage = JSON.parse(respnose.body);
 
-        if (groupChatMessage.userName == chatUserBean.userName) {
+        if (groupChatMessage.userName == imUser.userName) {
           groupChatMessage.clazz = "myself";
         } else {
           groupChatMessage.clazz = "";
@@ -140,8 +130,28 @@
       });
 
       stompClient.subscribe('/topic/online', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
-        var groupChatMessage = JSON.parse(respnose.body);
-        $("#userCount").html(groupChatMessage.userCount);
+        var onlineInfoBean = JSON.parse(respnose.body);
+        $("#userCount").html(onlineInfoBean.userCount);
+
+        if (onlineInfoBean.imUserList) {
+          var imUserList = onlineInfoBean.imUserList;
+          var onlineDomEle = "";
+          var domEle = "";
+          for (var i = 0; i < imUserList.length; i++) {
+            if (imUserList[i].userName != imUser.userName) {
+              if (imUserList[i].online == "1") {
+                onlineDomEle += "<li class='list-group-item'>" + imUserList[i].userName + "</li>";
+              } else {
+                domEle += "<li class='list-group-item gray'>" + imUserList[i].userName + "</li>";
+              }
+            }
+          }
+
+          var itselfDomEle = "<li class='list-group-item red'>" + imUser.userName + "</li>";
+
+          // 自己 + 在线 + 不在线
+          $("#imUserList").html(itselfDomEle + onlineDomEle + domEle);
+        }
       });
 
       brokerOnline();
@@ -165,7 +175,7 @@
     }
     var URL = "/groupChat";
     var formData = {
-      "nick": chatUserBean.nick,
+      "nick": imUser.nick,
       "msg": msg
     };
     $.post(URL, formData);
@@ -173,7 +183,7 @@
 
   function showResponse(groupChatMessage) {
     if (!(groupChatMessage.msg != null && groupChatMessage != "")) {
-      return ;
+      return;
     }
     var html = "";
     html += "<div class='" + groupChatMessage.clazz + "'>";

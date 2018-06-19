@@ -38,12 +38,6 @@
         </repository>
     </repositories>
 
-    <properties>
-        <!--修改thymeleaf版本-->
-        <thymeleaf.version>3.0.7.RELEASE</thymeleaf.version>
-        <thymeleaf-layout-dialect.version>2.2.2</thymeleaf-layout-dialect.version>
-    </properties>
-
     <dependencies>
 
         <dependency>

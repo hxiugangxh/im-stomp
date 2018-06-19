@@ -1,8 +1,8 @@
 package com.us.example.controller;
 
-import com.us.example.bean.GroupChatMessage;
+import com.us.example.bean.ChatMessage;
+import com.us.example.bean.ImUser;
 import com.us.example.bean.Message;
-import com.us.example.bean.OnLineBean;
 import com.us.example.constant.CacheConstant;
 import com.us.example.service.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,18 +56,18 @@ public class WebSocketController {
 
     @RequestMapping("/listOnline")
     @ResponseBody
-    public List<OnLineBean> listOnline() {
+    public List<ImUser> listOnline() {
 
-        List<OnLineBean> onLineBeanList = new ArrayList<>();
+        List<ImUser> imUserOnlineList = new ArrayList<>();
         for (SimpUser user : simpUserRegistry.getUsers()) {
-            OnLineBean onLineBean = new OnLineBean();
+            ImUser imUser = new ImUser();
 
-            onLineBean.setName(user.getName());
+            imUser.setUserName(user.getName());
 
-            onLineBeanList.add(onLineBean);
+            imUserOnlineList.add(imUser);
         }
 
-        return onLineBeanList;
+        return imUserOnlineList;
     }
 
     @RequestMapping(value = "/login")
@@ -88,16 +88,16 @@ public class WebSocketController {
     //http://localhost:8080/ws
     @MessageMapping("/welcome")//浏览器发送请求通过@messageMapping 映射/welcome 这个地址。
     @SendTo("/topic/getResponse")//服务器端有消息时,会订阅@SendTo 中的路径的浏览器发送消息。
-    public GroupChatMessage say(GroupChatMessage message) throws Exception {
+    public ChatMessage say(ChatMessage message) throws Exception {
         Thread.sleep(1000);
-        return new GroupChatMessage("Welcome, " + message.getMsg() + "!");
+        return new ChatMessage("Welcome, " + message.getMsg() + "!");
     }
 
     @MessageMapping("/testSend")
     @SendTo("/topic/getResponse")
-    public GroupChatMessage testSend() throws Exception {
+    public ChatMessage testSend() throws Exception {
 
-        return new GroupChatMessage("/topic/getResponse测试");
+        return new ChatMessage("/topic/getResponse测试");
     }
 
     //http://localhost:8080/Welcome1
