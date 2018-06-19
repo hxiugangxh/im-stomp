@@ -6,12 +6,18 @@ spring:
     url: jdbc:mysql://localhost/webqq?useUnicode=yes&characterEncoding=UTF-8&useSSL=false
     username: root
     password: 123456
-  redis:
+  http:
+    encoding:
+      enabled: true
+  rabbitmq:
+    username: guest
+    password: guest
     host: localhost
+    port: 5672
+
+
 server:
   port: 8090
-  session:
-    timeout: 3600
 
 imooc:
   security:

@@ -1,7 +1,5 @@
 package com.us.example.listener;
 
-import com.us.example.bean.GroupChatMessage;
-import com.us.example.constant.Constants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

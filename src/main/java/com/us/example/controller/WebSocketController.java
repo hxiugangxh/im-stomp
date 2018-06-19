@@ -1,9 +1,8 @@
 package com.us.example.controller;
 
+import com.us.example.bean.GroupChatMessage;
 import com.us.example.bean.Message;
 import com.us.example.bean.OnLineBean;
-import com.us.example.bean.GroupChatMessage;
-import com.us.example.bean.Response;
 import com.us.example.constant.CacheConstant;
 import com.us.example.service.WebSocketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +14,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.security.Principal;
 import java.util.ArrayList;

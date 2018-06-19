@@ -1,23 +1,22 @@
 package com.us.example.interceptor;
 
-import com.us.example.bean.GroupChatMessage;
 import com.us.example.constant.CacheConstant;
 import com.us.example.constant.Constants;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.validator.constraints.URL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
-import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.messaging.support.ChannelInterceptorAdapter;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 public class PresenceChannelInterceptor extends ChannelInterceptorAdapter {
+
+    @Autowired
+    private CacheManager cacheManager;
 
     @Override
     public void postSend(Message<?> message, MessageChannel channel, boolean sent) {
@@ -46,7 +45,7 @@ public class PresenceChannelInterceptor extends ChannelInterceptorAdapter {
     }
 
     @Autowired
-    private CacheManager cacheManager;
+    private TestService testService;
 
     private void connect(String sessionId, String accountId) {
         log.info(" STOMP Connect [sessionId: " + sessionId + ", accountId: " + accountId + "]");
@@ -60,6 +59,8 @@ public class PresenceChannelInterceptor extends ChannelInterceptorAdapter {
         log.info(" STOMP disconnect [sessionId: " + sessionId + ", accountId: " + accountId + "]");
         String cacheName = CacheConstant.WEBSOCKET_ACCOUNT;
         cacheManager.getCache(cacheName).evict(cacheName + accountId);
+
+        testService.test();
     }
 
 }

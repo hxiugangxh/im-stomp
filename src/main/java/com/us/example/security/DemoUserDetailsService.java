@@ -23,7 +23,6 @@ public class DemoUserDetailsService implements UserDetailsService, SocialUserDet
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     /*
      * (non-Javadoc)
      *
