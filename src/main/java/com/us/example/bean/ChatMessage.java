@@ -2,18 +2,22 @@ package com.us.example.bean;
 
 import lombok.Data;
 
+import javax.persistence.*;
 import java.util.Date;
 
 @Data
+@Entity
+@Table(name = "cm_chat_log")
 public class ChatMessage {
-    private Integer type; // 0: 聊天；1；在线人数
-    private String userName; // 用户
-    private String nick; // 名称
-    private String online; // 0：离线；1：在线
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+    private Integer type; // 0: 单聊；1；群聊
+    private String fromUserName;
+    private String fromNick;
+    private String toUserName;
+    private String toNick;
     private String msg; // 消息
     private Date sendTime; // 发送时间
-    private Date reviceTime; // 接收时间
-    private Integer userCount; // 在线人数
 
     public ChatMessage() {}
 

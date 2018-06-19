@@ -31,6 +31,10 @@
     .gray {
       color: #ddd;
     }
+
+    li {
+      cursor: pointer;
+    }
   </style>
 
 </head>
@@ -118,15 +122,15 @@
   stompClient.connect({}, function (frame) {//链接Web Socket的服务端。
 
       stompClient.subscribe('/topic/getResponse', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
-        var groupChatMessage = JSON.parse(respnose.body);
+        var chatMesssage = JSON.parse(respnose.body);
 
-        if (groupChatMessage.userName == imUser.userName) {
-          groupChatMessage.clazz = "myself";
+        if (chatMesssage.fromUserName == imUser.userName) {
+          chatMesssage.clazz = "myself";
         } else {
-          groupChatMessage.clazz = "";
+          chatMesssage.clazz = "";
         }
 
-        showResponse(groupChatMessage);
+        showResponse(chatMesssage);
       });
 
       stompClient.subscribe('/topic/online', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
@@ -164,7 +168,11 @@
 
   function brokerOnline() {
     var URL = "/brokerOnline";
-    $.post(URL);
+    $.post(URL, {}, function(jsonData) {
+      if (!jsonData.flag) {
+        alert("广播在线信息失败，请与管理员联系！");
+      }
+    }, "json");
   }
 
   function sendMessage() {
@@ -175,22 +183,28 @@
     }
     var URL = "/groupChat";
     var formData = {
-      "nick": imUser.nick,
+      "type": "1",
+      "fromUserName": imUser.userName,
+      "fromNick": imUser.nick,
       "msg": msg
     };
-    $.post(URL, formData);
+    $.post(URL, formData, function(jsonData) {
+      if (!jsonData.flag) {
+        alert("发送失败，请与管理员联系！");
+      }
+    }, "json");
   }
 
-  function showResponse(groupChatMessage) {
-    if (!(groupChatMessage.msg != null && groupChatMessage != "")) {
+  function showResponse(chatMesssage) {
+    if (!(chatMesssage.msg != null && chatMesssage != "")) {
       return;
     }
     var html = "";
-    html += "<div class='" + groupChatMessage.clazz + "'>";
+    html += "<div class='" + chatMesssage.clazz + "'>";
     html += " <div class='title'>"
-    html += groupChatMessage.nick + "&nbsp;" + new Date().format("yyyy-MM-dd HH:mm:ss");
+    html += chatMesssage.fromNick + "&nbsp;" + new Date().format("yyyy-MM-dd HH:mm:ss");
     html += " </div>";
-    html += " <div class='item'>" + replace_em(groupChatMessage.msg) + "</div>";
+    html += " <div class='item'>" + replace_em(chatMesssage.msg) + "</div>";
     html += "</div>";
 
     $("#msg").val("");

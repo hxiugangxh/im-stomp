@@ -1,9 +1,11 @@
 package com.us.example.controller;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.us.example.bean.ChatMessage;
 import com.us.example.bean.ImUser;
 import com.us.example.bean.OnlineInfoBean;
 import com.us.example.constant.Constants;
+import com.us.example.service.ChatLogService;
 import com.us.example.service.ImService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
@@ -17,10 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 public class ImController {
@@ -36,6 +35,9 @@ public class ImController {
 
     @Autowired
     private ImService imService;
+
+    @Autowired
+    private ChatLogService chatLogService;
 
     @RequestMapping("/look")
     @ResponseBody
@@ -66,32 +68,43 @@ public class ImController {
 
     @RequestMapping("/brokerOnline")
     @ResponseBody
-    public String brokerOnline() {
-        List<String> onlineUserList = new ArrayList<>();
-        for (SimpUser simpUser : simpUserRegistry.getUsers()) {
-            onlineUserList.add(simpUser.getName());
+    public Map<String, Object> brokerOnline() {
+        Map<String, Object> jsonMap = new HashMap<>();
+        boolean flag = true;
+        try {
+            List<String> onlineUserList = new ArrayList<>();
+            for (SimpUser simpUser : simpUserRegistry.getUsers()) {
+                onlineUserList.add(simpUser.getName());
+            }
+
+            OnlineInfoBean onlineInfoBean = imService.listOnlineUser(onlineUserList);
+
+            simpMessagingTemplate.convertAndSend(Constants.USER_ONLINE_INFO, onlineInfoBean);
+        } catch (Exception e) {
+            e.printStackTrace();
+            flag = false;
         }
 
-        OnlineInfoBean onlineInfoBean = imService.listOnlineUser(onlineUserList);
+        jsonMap.put("flag", flag);
 
-        simpMessagingTemplate.convertAndSend(Constants.USER_ONLINE_INFO, onlineInfoBean);
-
-        return "test";
+        return jsonMap;
     }
 
     @RequestMapping("/groupChat")
     @ResponseBody
-    public String groupChat(ChatMessage chatMessage, Authentication authentication) {
+    public Map<String, Object> groupChat(ChatMessage chatMessage) {
+        Map<String, Object> jsonMap = new HashMap<>();
+        boolean flag = true;
+        try {
+            chatLogService.save(chatMessage);
+            simpMessagingTemplate.convertAndSend(Constants.GROUP_CHAT_DES, chatMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            flag = false;
+        }
+        jsonMap.put("flag", flag);
 
-        String userName = ((UserDetails) authentication.getPrincipal()).getUsername();
-        chatMessage.setUserName(userName);
-        chatMessage.setSendTime(new Date());
-
-        simpMessagingTemplate.convertAndSend(Constants.GROUP_CHAT_DES, chatMessage);
-
-        return "test";
+        return jsonMap;
     }
-
-
 
 }
