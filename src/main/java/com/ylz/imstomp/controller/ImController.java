@@ -10,6 +10,7 @@ import com.ylz.imstomp.service.ImService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.domain.Page;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
@@ -80,9 +81,9 @@ public class ImController {
     public List<ChatMessage> listChatMessage(
             @RequestParam("type") Integer type,
             @RequestParam("userName") String userName) {
-        List<ChatMessage> chatMessageList = imService.listChatMessage(type, userName);
+        Page<ChatMessage> chatMessagePage = imService.listChatMessage(type, userName);
 
-        return chatMessageList;
+        return chatMessagePage.getContent();
     }
 
     @RequestMapping("/brokerOnline")
