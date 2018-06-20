@@ -12,8 +12,14 @@
       select * from cm_im_user
     </select>
 
-    <select id="listGroupChatMessage" resultType="ChatMessage">
-      select * from cm_chat_log where type = #{type}
+    <select id="listChatMessage" resultType="ChatMessage">
+      select * from cm_chat_log
+      <where>
+          and type = #{type}
+          <if test="type == '0'">
+              and (from_user_name = #{userName} or to_nick_name = #{userName})
+          </if>
+      </where>
     </select>
 
 </mapper>

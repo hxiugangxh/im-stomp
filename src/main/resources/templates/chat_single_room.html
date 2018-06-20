@@ -3,7 +3,7 @@
 <meta charset="UTF-8"/>
 <head>
   <link rel="icon" href="./favicon.ico"/>
-  <title>聊天室</title>
+  <title>单聊</title>
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
   <link rel="stylesheet" th:href="@{/bootstrap/css/reset.css}"/>
@@ -79,18 +79,11 @@
   <div class="row top">
 
     <div class="col-sm-12" id="top">
-      <div style="color:#fff;">
-        在线人数：<span id="userCount" style="color:#fff;">0</span> 人
-      </div>
+      <div style="color:#fff;" th:text="${toImUser.nick}"></div>
     </div>
   </div>
   <div class="row">
-    <div class="col-sm-2" style="padding: 0">
-      <ul class="list-group ul-top" id="imUserList" style="overflow: auto;margin: 0">
-        <!--<li class="list-group-item">123</li>-->
-      </ul>
-    </div>
-    <div class="col-sm-10" style="padding: 0">
+    <div class="col-sm-12">
       <div id="content" style="border: 1px solid #ddd">
 
       </div>
@@ -116,70 +109,27 @@
 <script th:inline="javascript">
   /*<![CDATA[*/
   //链接endpoint名称为 "/endpointChat" 的endpoint。
+  var toImUser = [[${toImUser}]];
   var imUser = [[${imUser}]];
   jQuery(function () {
-    var socket = new SockJS('/endpointWisely'); //链接SockJS 的endpoint 名称为"/endpointWisely"
+    var socket = new SockJS('/endpointChat'); //链接SockJS 的endpoint 名称为"/endpointWisely"
     stompClient = Stomp.over(socket);//使用stomp子协议的WebSocket 客户端
-    stompClient.connect({}, function (frame) {//链接Web Socket的服务端。
+    stompClient.connect('guest', 'guest', function (frame) {//链接Web Socket的服务端。
 
-        stompClient.subscribe('/topic/getResponse', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
+        stompClient.subscribe('/user/queue/notifications', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
           var chatMesssage = JSON.parse(respnose.body);
 
           showResponse(chatMesssage);
         });
-
-        stompClient.subscribe('/topic/online', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
-          var onlineInfoBean = JSON.parse(respnose.body);
-          $("#userCount").html(onlineInfoBean.userCount);
-
-          if (onlineInfoBean.imUserList) {
-            var imUserList = onlineInfoBean.imUserList;
-            var onlineDomEle = "";
-            var domEle = "";
-            for (var i = 0; i < imUserList.length; i++) {
-              if (imUserList[i].userName != imUser.userName) {
-                if (imUserList[i].online == "1") {
-                  onlineDomEle += "<li class='list-group-item'>" + imUserList[i].userName + "</li>";
-                } else {
-                  domEle += "<li class='list-group-item gray'>" + imUserList[i].userName + "</li>";
-                }
-              }
-            }
-
-            var itselfDomEle = "<li class='list-group-item red'>" + imUser.userName + "</li>";
-
-            // 自己 + 在线 + 不在线
-            $("#imUserList").html(itselfDomEle + onlineDomEle + domEle);
-          }
-        });
-
-        brokerOnline();
       }, function (error) {
         // 连接失败时（服务器响应 ERROR 帧）的回调方法
         document.getElementById("state-info").innerHTML = "连接失败";
         console.log('连接失败【' + error + '】');
       }
     );
-
-    // 1.5s若网络抖动则在检测一次
-    setTimeout(brokerOnline, 1500);
     // 加载历史聊天记录
     listChatMessage();
   });
-
-  var brokerOnlineFlag = false;
-  function brokerOnline() {
-    if (!brokerOnlineFlag) {
-      var URL = "/im/brokerOnline";
-      $.post(URL, {}, function (jsonData) {
-        if (jsonData.flag) {
-          brokerOnlineFlag = true;
-        } else {
-          alert("广播在线信息失败，请与管理员联系！");
-        }
-      }, "json");
-    }
-  }
 
   function sendMessage() {
     var msg = $("#msg").val();
@@ -187,15 +137,18 @@
     if (msg == "") {
       return;
     }
-    var URL = "/im/groupChat";
+    var URL = "/im/singleChat";
     var formData = {
-      "type": "1",
+      "type": "0",
       "fromUserName": imUser.userName,
       "fromNick": imUser.nick,
+      "toUserName": toImUser.userName,
+      "toNick": toImUser.nick,
       "msg": msg,
       "sendTime": new Date()
     };
     $.post(URL, formData, function (jsonData) {
+      showResponse(formData);
       if (!jsonData.flag) {
         alert("发送失败，请与管理员联系！");
       }
@@ -206,26 +159,26 @@
     var URL = "/im/listChatMessage";
     var formData = {
       "userName": imUser.userName,
-      "type": "1"
+      "type": "0"
     };
 
     $.post(URL, formData, function (chatMessageList) {
+      var domEle = "";
       for (var i = 0; i < chatMessageList.length; i++) {
         var clazz = "";
         var chatMessage = chatMessageList[i];
         if (chatMessage.fromUserName == imUser.userName) {
           clazz = "myself";
         }
-        var html = "";
-        html += "<div class='" + clazz + "'>";
-        html += " <div class='title'>"
-        html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
-        html += " </div>";
-        html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
-        html += "</div>";
-
-        $("#content").append(html);
+        domEle += "<div class='" + clazz + "'>";
+        domEle += " <div class='title'>"
+        domEle += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
+        domEle += " </div>";
+        domEle += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
+        domEle += "</div>";
       }
+      $("#content").html(domEle);
+      $("#content").scrollTop(9999999999);
     }, "json");
   }
 
@@ -233,6 +186,7 @@
     if (!(chatMessage.msg != null && chatMessage != "")) {
       return;
     }
+
     var clazz = "";
     if (chatMessage.fromUserName == imUser.userName) {
       clazz = "myself";
@@ -247,6 +201,7 @@
 
     $("#msg").val("");
     $("#content").append(html);
+    $("#content").scrollTop(9999999999);
   }
 
   function replace_em(str) {

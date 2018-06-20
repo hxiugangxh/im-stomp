@@ -15,5 +15,5 @@ public interface ImUserMapper {
 
     List<ImUser> listOnlineUser(@Param("onlineUserList") List<String> onlineUserList);
 
-    List<ChatMessage> listGroupChatMessage(@Param("userName") String userName, @Param("type") String type);
+    List<ChatMessage> listChatMessage(@Param("userName") String userName, @Param("type") String type);
 }

@@ -22,9 +22,6 @@ public class ImServiceImpl implements ImService {
 
     @Override
     public String getNick(String userName) {
-
-        System.out.println(userName);
-
         List<Map<String, Object>> list = imUserMapper.getNick(userName);
 
         return (list.size() > 0) ? MapUtils.getString(list.get(0), "nick", "") : "";
@@ -51,7 +48,7 @@ public class ImServiceImpl implements ImService {
     }
 
     @Override
-    public List<ChatMessage> listGroupChatMessage(String userName, String type) {
-        return imUserMapper.listGroupChatMessage(userName, type);
+    public List<ChatMessage> listChatMessage(String userName, String type) {
+        return imUserMapper.listChatMessage(userName, type);
     }
 }

@@ -4,7 +4,7 @@ import com.ylz.imstomp.bean.ChatMessage;
 import com.ylz.imstomp.bean.ImUser;
 import com.ylz.imstomp.bean.OnlineInfoBean;
 import com.ylz.imstomp.constant.Constants;
-import com.ylz.imstomp.service.ChatLogService;
+import com.ylz.imstomp.service.ImChatLogService;
 import com.ylz.imstomp.service.ImService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
@@ -19,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +42,7 @@ public class ImController {
     private ImService imService;
 
     @Autowired
-    private ChatLogService chatLogService;
+    private ImChatLogService imChatLogService;
 
     @RequestMapping("/look")
     @ResponseBody
@@ -72,12 +70,12 @@ public class ImController {
         return "chat_room";
     }
 
-    @RequestMapping("/listGroupChatMessage")
+    @RequestMapping("/listChatMessage")
     @ResponseBody
-    public List<ChatMessage> listGroupChatMessage(
+    public List<ChatMessage> listChatMessage(
             @RequestParam("userName") String userName,
             @RequestParam("type") String type) {
-        List<ChatMessage> chatMessageList = imService.listGroupChatMessage(userName, type);
+        List<ChatMessage> chatMessageList = imService.listChatMessage(userName, type);
 
         return chatMessageList;
     }
@@ -112,8 +110,50 @@ public class ImController {
         Map<String, Object> jsonMap = new HashMap<>();
         boolean flag = true;
         try {
-            chatLogService.save(chatMessage);
+            imChatLogService.saveChatLog(chatMessage);
             simpMessagingTemplate.convertAndSend(Constants.GROUP_CHAT_DES, chatMessage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            flag = false;
+        }
+        jsonMap.put("flag", flag);
+
+        return jsonMap;
+    }
+
+    @RequestMapping("/chatSingleRoom")
+    public String chatSingleRoom(
+            @RequestParam(value = "toUserName") String toUserName,
+            Map<String, Object> map,
+            Principal principal) {
+
+        ImUser imUser = new ImUser();
+        imUser.setUserName(principal.getName());
+        imUser.setNick(imService.getNick(principal.getName()));
+
+        ImUser toImUser = new ImUser();
+        toImUser.setUserName(toUserName);
+        toImUser.setNick(imService.getNick(toUserName));
+
+        map.put("imUser", imUser);
+        map.put("toImUser", toImUser);
+
+        return "chat_single_room";
+    }
+
+    @RequestMapping("/singleChat")
+    @ResponseBody
+    public Map<String, Object> singleChat(ChatMessage chatMessage, Principal principal) {
+        chatMessage.setFromUserName(principal.getName());
+        chatMessage.setFromNick(imService.getNick(principal.getName()));
+
+        Map<String, Object> jsonMap = new HashMap<>();
+        boolean flag = true;
+        try {
+            imChatLogService.saveChatLog(chatMessage);
+            System.out.println(chatMessage.getToUserName());
+            simpMessagingTemplate.convertAndSendToUser(chatMessage.getToUserName(),
+                    Constants.SINGLE_CHAT_DES, chatMessage);
         } catch (Exception e) {
             e.printStackTrace();
             flag = false;

@@ -10,5 +10,5 @@ public interface ImService {
 
     OnlineInfoBean listOnlineUser(List<String> onlineUserList);
 
-    List<ChatMessage> listGroupChatMessage(String userName, String type);
+    List<ChatMessage> listChatMessage(String userName, String type);
 }

@@ -13,6 +13,11 @@ public class Constants {
     public static final String SKEY_ACCOUNT_ID = "accountId";
 
     /**
+     * 单聊地址
+     */
+    public static final String SINGLE_CHAT_DES = "/queue/notifications";
+
+    /**
      * 群聊地址
      */
     public static final String GROUP_CHAT_DES = "/topic/getResponse";
