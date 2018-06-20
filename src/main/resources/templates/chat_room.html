@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <meta charset="UTF-8"/>
 <head>
-  <link rel="icon" href="./favicon.ico"/>
+  <link rel="icon" href="/favicon.ico"/>
   <title>聊天室</title>
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
@@ -161,14 +161,15 @@
       }
     );
 
-    // 1.5s若网络抖动则在检测一次
-    setTimeout(brokerOnline, 1500);
+    // 5s若网络抖动则在检测一次
+    setTimeout(brokerOnline, 5000);
     // 加载历史聊天记录
     listChatMessage();
   });
 
   var brokerOnlineFlag = false;
   function brokerOnline() {
+    console.log("brokerOnline");
     if (!brokerOnlineFlag) {
       var URL = "/im/brokerOnline";
       $.post(URL, {}, function (jsonData) {

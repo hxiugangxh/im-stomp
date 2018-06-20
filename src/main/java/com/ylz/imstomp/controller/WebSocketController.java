@@ -47,9 +47,7 @@ public class WebSocketController {
 
         String sessionId = cache.get("websocket_accountadmin", String.class);
 
-        System.out.println(sessionId);
         sessionId = cache.get("websocket_accountabel", String.class);
-        System.out.println(sessionId);
 
         return "test";
     }

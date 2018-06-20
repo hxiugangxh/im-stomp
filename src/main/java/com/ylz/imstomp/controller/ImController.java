@@ -151,7 +151,6 @@ public class ImController {
         boolean flag = true;
         try {
             imChatLogService.saveChatLog(chatMessage);
-            System.out.println(chatMessage.getToUserName());
             simpMessagingTemplate.convertAndSendToUser(chatMessage.getToUserName(),
                     Constants.SINGLE_CHAT_DES, chatMessage);
         } catch (Exception e) {
