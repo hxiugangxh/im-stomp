@@ -4,16 +4,16 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ylz.imstomp.dao.mapper.ImUserMapper">
 
-    <select id="getNick" resultType="map">
-      select nick from cm_im_user where user_name = #{userName}
+    <select id="getNick" resultType="java.util.Map">
+      select * from cm_im_user where user_name = #{userName}
     </select>
 
     <select id="listOnlineUser" resultType="ImUser">
       select * from cm_im_user
     </select>
 
-    <select id="listChatMessage" resultType="ChatMessage">
-      select * from cm_chat_log
+    <select id="listGroupChatMessage" resultType="ChatMessage">
+      select * from cm_chat_log where type = #{type}
     </select>
 
 </mapper>

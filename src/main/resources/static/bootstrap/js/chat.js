@@ -11,7 +11,7 @@ $(function () {
     $('#faceBtn').qqFace({
         id: 'facebox',
         assign: 'msg',
-        path: 'arclist/'	//表情存放的路径
+        path: '/arclist/'	//表情存放的路径
     });
 });
 

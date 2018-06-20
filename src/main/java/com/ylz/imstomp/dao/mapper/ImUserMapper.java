@@ -10,9 +10,10 @@ import java.util.Map;
 
 @Component
 public interface ImUserMapper {
+
     List<Map<String, Object>> getNick(@Param("userName") String userName);
 
     List<ImUser> listOnlineUser(@Param("onlineUserList") List<String> onlineUserList);
 
-    List<ChatMessage> listChatMessage(@Param("userName") String userName, @Param("type") String type);
+    List<ChatMessage> listGroupChatMessage(@Param("userName") String userName, @Param("type") String type);
 }

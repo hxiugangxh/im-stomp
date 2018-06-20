@@ -51,7 +51,7 @@ public class ImServiceImpl implements ImService {
     }
 
     @Override
-    public List<ChatMessage> listChatMessage(String userName, String type) {
-        return imUserMapper.listChatMessage(userName, type);
+    public List<ChatMessage> listGroupChatMessage(String userName, String type) {
+        return imUserMapper.listGroupChatMessage(userName, type);
     }
 }

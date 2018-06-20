@@ -87,8 +87,6 @@
   <div class="row">
     <div class="col-sm-2" style="padding: 0">
       <ul class="list-group ul-top" id="imUserList" style="overflow: auto;margin: 0">
-        <li class="list-group-item" th:each="chatMessage : ${chatMessageList}"
-          th:text="${chatMessage.msg}"></li>
         <!--<li class="list-group-item">123</li>-->
       </ul>
     </div>
@@ -119,58 +117,57 @@
   /*<![CDATA[*/
   //链接endpoint名称为 "/endpointChat" 的endpoint。
   var imUser = [[${imUser}]];
-  var socket = new SockJS('/endpointWisely'); //链接SockJS 的endpoint 名称为"/endpointWisely"
-  stompClient = Stomp.over(socket);//使用stomp子协议的WebSocket 客户端
-  stompClient.connect({}, function (frame) {//链接Web Socket的服务端。
+  jQuery(function () {
+    var socket = new SockJS('/endpointWisely'); //链接SockJS 的endpoint 名称为"/endpointWisely"
+    stompClient = Stomp.over(socket);//使用stomp子协议的WebSocket 客户端
+    stompClient.connect({}, function (frame) {//链接Web Socket的服务端。
 
-      stompClient.subscribe('/topic/getResponse', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
-        var chatMesssage = JSON.parse(respnose.body);
+        stompClient.subscribe('/topic/getResponse', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
+          var chatMesssage = JSON.parse(respnose.body);
 
-        if (chatMesssage.fromUserName == imUser.userName) {
-          chatMesssage.clazz = "myself";
-        } else {
-          chatMesssage.clazz = "";
-        }
+          showResponse(chatMesssage);
+        });
 
-        showResponse(chatMesssage);
-      });
+        stompClient.subscribe('/topic/online', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
+          var onlineInfoBean = JSON.parse(respnose.body);
+          $("#userCount").html(onlineInfoBean.userCount);
 
-      stompClient.subscribe('/topic/online', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
-        var onlineInfoBean = JSON.parse(respnose.body);
-        $("#userCount").html(onlineInfoBean.userCount);
-
-        if (onlineInfoBean.imUserList) {
-          var imUserList = onlineInfoBean.imUserList;
-          var onlineDomEle = "";
-          var domEle = "";
-          for (var i = 0; i < imUserList.length; i++) {
-            if (imUserList[i].userName != imUser.userName) {
-              if (imUserList[i].online == "1") {
-                onlineDomEle += "<li class='list-group-item'>" + imUserList[i].userName + "</li>";
-              } else {
-                domEle += "<li class='list-group-item gray'>" + imUserList[i].userName + "</li>";
+          if (onlineInfoBean.imUserList) {
+            var imUserList = onlineInfoBean.imUserList;
+            var onlineDomEle = "";
+            var domEle = "";
+            for (var i = 0; i < imUserList.length; i++) {
+              if (imUserList[i].userName != imUser.userName) {
+                if (imUserList[i].online == "1") {
+                  onlineDomEle += "<li class='list-group-item'>" + imUserList[i].userName + "</li>";
+                } else {
+                  domEle += "<li class='list-group-item gray'>" + imUserList[i].userName + "</li>";
+                }
               }
             }
+
+            var itselfDomEle = "<li class='list-group-item red'>" + imUser.userName + "</li>";
+
+            // 自己 + 在线 + 不在线
+            $("#imUserList").html(itselfDomEle + onlineDomEle + domEle);
           }
+        });
 
-          var itselfDomEle = "<li class='list-group-item red'>" + imUser.userName + "</li>";
+        brokerOnline();
+      }, function (error) {
+        // 连接失败时（服务器响应 ERROR 帧）的回调方法
+        document.getElementById("state-info").innerHTML = "连接失败";
+        console.log('连接失败【' + error + '】');
+      }
+    );
 
-          // 自己 + 在线 + 不在线
-          $("#imUserList").html(itselfDomEle + onlineDomEle + domEle);
-        }
-      });
-
-      brokerOnline();
-    }, function (error) {
-      // 连接失败时（服务器响应 ERROR 帧）的回调方法
-      document.getElementById("state-info").innerHTML = "连接失败";
-      console.log('连接失败【' + error + '】');
-    }
-  );
+    // 加载历史聊天记录
+    listChatMessage();
+  });
 
   function brokerOnline() {
-    var URL = "/brokerOnline";
-    $.post(URL, {}, function(jsonData) {
+    var URL = "/im/brokerOnline";
+    $.post(URL, {}, function (jsonData) {
       if (!jsonData.flag) {
         alert("广播在线信息失败，请与管理员联系！");
       }
@@ -183,7 +180,7 @@
     if (msg == "") {
       return;
     }
-    var URL = "/groupChat";
+    var URL = "/im/groupChat";
     var formData = {
       "type": "1",
       "fromUserName": imUser.userName,
@@ -191,23 +188,54 @@
       "msg": msg,
       "sendTime": new Date()
     };
-    $.post(URL, formData, function(jsonData) {
+    $.post(URL, formData, function (jsonData) {
       if (!jsonData.flag) {
         alert("发送失败，请与管理员联系！");
       }
     }, "json");
   }
 
-  function showResponse(chatMesssage) {
-    if (!(chatMesssage.msg != null && chatMesssage != "")) {
+  function listChatMessage() {
+    var URL = "/im/listGroupChatMessage";
+    var formData = {
+      "userName": imUser.userName,
+      "type": "1"
+    };
+
+    $.post(URL, formData, function (chatMessageList) {
+      for (var i = 0; i < chatMessageList.length; i++) {
+        var clazz = "";
+        var chatMessage = chatMessageList[i];
+        if (chatMessage.fromUserName == imUser.userName) {
+          clazz = "myself";
+        }
+        var html = "";
+        html += "<div class='" + clazz + "'>";
+        html += " <div class='title'>"
+        html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
+        html += " </div>";
+        html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
+        html += "</div>";
+
+        $("#content").append(html);
+      }
+    }, "json");
+  }
+
+  function showResponse(chatMessage) {
+    if (!(chatMessage.msg != null && chatMessage != "")) {
       return;
     }
+    var clazz = "";
+    if (chatMessage.fromUserName == imUser.userName) {
+      clazz = "myself";
+    }
     var html = "";
-    html += "<div class='" + chatMesssage.clazz + "'>";
+    html += "<div class='" + clazz + "'>";
     html += " <div class='title'>"
-    html += chatMesssage.fromNick + "&nbsp;" + new Date().format("yyyy-MM-dd HH:mm:ss");
+    html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
     html += " </div>";
-    html += " <div class='item'>" + replace_em(chatMesssage.msg) + "</div>";
+    html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
     html += "</div>";
 
     $("#msg").val("");
@@ -218,7 +246,7 @@
     str = str.replace(/\</g, '&lt;');
     str = str.replace(/\>/g, '&gt;');
     str = str.replace(/\n/g, '<br/>');
-    str = str.replace(/\[em_([0-9]*)\]/g, '<img src="arclist/$1.gif" border="0" />');
+    str = str.replace(/\[em_([0-9]*)\]/g, '<img src="/arclist/$1.gif" border="0" />');
     return str;
   }
 

@@ -16,14 +16,19 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/im")
 public class ImController {
 
     @Autowired
@@ -62,13 +67,19 @@ public class ImController {
         imUser.setUserName(userName);
         imUser.setNick(imService.getNick(userName));
 
-        String type = "1";
-        List<ChatMessage> chatMessageList = imService.listChatMessage(userName, type);
-
         map.put("imUser", imUser);
-        map.put("chatMessageList", chatMessageList);
 
         return "chat_room";
+    }
+
+    @RequestMapping("/listGroupChatMessage")
+    @ResponseBody
+    public List<ChatMessage> listGroupChatMessage(
+            @RequestParam("userName") String userName,
+            @RequestParam("type") String type) {
+        List<ChatMessage> chatMessageList = imService.listGroupChatMessage(userName, type);
+
+        return chatMessageList;
     }
 
     @RequestMapping("/brokerOnline")
