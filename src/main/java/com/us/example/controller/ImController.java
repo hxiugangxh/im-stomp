@@ -1,6 +1,5 @@
 package com.us.example.controller;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.us.example.bean.ChatMessage;
 import com.us.example.bean.ImUser;
 import com.us.example.bean.OnlineInfoBean;
@@ -19,7 +18,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 public class ImController {
@@ -58,10 +60,13 @@ public class ImController {
         String userName = userDetails.getUsername();
         ImUser imUser = new ImUser();
         imUser.setUserName(userName);
-
         imUser.setNick(imService.getNick(userName));
 
+        String type = "1";
+        List<ChatMessage> chatMessageList = imService.listChatMessage(userName, type);
+
         map.put("imUser", imUser);
+        map.put("chatMessageList", chatMessageList);
 
         return "chat_room";
     }

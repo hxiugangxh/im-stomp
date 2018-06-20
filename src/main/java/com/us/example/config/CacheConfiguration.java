@@ -22,7 +22,7 @@ public class CacheConfiguration {
 	@Bean
 	public EhCacheManagerFactoryBean ehCacheManagerFactoryBean(){
 		EhCacheManagerFactoryBean ehCacheManagerFactoryBean = new EhCacheManagerFactoryBean();
-		ehCacheManagerFactoryBean.setConfigLocation(new ClassPathResource("conf/ehcache.xml"));
+		ehCacheManagerFactoryBean.setConfigLocation(new ClassPathResource("config/ehcache.xml"));
 		return ehCacheManagerFactoryBean;
 	}
 	

@@ -186,7 +186,8 @@
       "type": "1",
       "fromUserName": imUser.userName,
       "fromNick": imUser.nick,
-      "msg": msg
+      "msg": msg,
+      "sendTime": new Date()
     };
     $.post(URL, formData, function(jsonData) {
       if (!jsonData.flag) {
