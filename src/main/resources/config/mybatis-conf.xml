@@ -34,7 +34,7 @@
         <!-- 这样定义后就可以用city来代替整个City类全路径了-->
         <!--<typeAlias alias="Student" type="com.hxg.springbootmybatis.controller.Student"/>-->
 
-        <package name="com.us.example.bean"/>
+        <package name="com.ylz.imstomp.bean"/>
     </typeAliases>
 
 </configuration>

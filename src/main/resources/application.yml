@@ -26,9 +26,13 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   config-location: classpath:config/mybatis-conf.xml
 
+
 imooc:
   security:
     browser:
       signInResponseType: REDIRECT
       singInSuccessUrl: /chatRoom
       signInPage: /login
+logging:
+  level:
+    com.us.example.dao.mapper: debug
