@@ -20,11 +20,7 @@ spring:
     port: 5672
   data:
     mongodb:
-      host: localhost
-      port: 27017
-      database: sso
-      username: sso
-      password: sso
+      uri: mongodb://sso:841017@localhost:27017/sso
 
 server:
   port: 8090

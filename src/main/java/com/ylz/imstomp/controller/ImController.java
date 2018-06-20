@@ -4,11 +4,13 @@ import com.ylz.imstomp.bean.ChatMessage;
 import com.ylz.imstomp.bean.ImUser;
 import com.ylz.imstomp.bean.OnlineInfoBean;
 import com.ylz.imstomp.constant.Constants;
+import com.ylz.imstomp.dao.mongodb.ImChatLogMongo;
 import com.ylz.imstomp.service.ImChatLogService;
 import com.ylz.imstomp.service.ImService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
@@ -44,6 +46,9 @@ public class ImController {
     @Autowired
     private ImChatLogService imChatLogService;
 
+    @Autowired
+    private ImChatLogMongo imChatLogMongo;
+
     @RequestMapping("/look")
     @ResponseBody
     public String look() {
@@ -73,9 +78,9 @@ public class ImController {
     @RequestMapping("/listChatMessage")
     @ResponseBody
     public List<ChatMessage> listChatMessage(
-            @RequestParam("userName") String userName,
-            @RequestParam("type") String type) {
-        List<ChatMessage> chatMessageList = imService.listChatMessage(userName, type);
+            @RequestParam("type") Integer type,
+            @RequestParam("userName") String userName) {
+        List<ChatMessage> chatMessageList = imService.listChatMessage(type, userName);
 
         return chatMessageList;
     }

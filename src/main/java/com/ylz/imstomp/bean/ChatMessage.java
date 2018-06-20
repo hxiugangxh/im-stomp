@@ -1,16 +1,17 @@
 package com.ylz.imstomp.bean;
 
 import lombok.Data;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
+import javax.persistence.Id;
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@Entity
-@Table(name = "cm_chat_log")
-public class ChatMessage {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+@Document(collection = "cm_chat_message")
+public class ChatMessage implements Serializable {
+    @Id
+    private String id;
     private Integer type; // 0: 单聊；1；群聊
     private String fromUserName;
     private String fromNick;

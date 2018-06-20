@@ -4,6 +4,7 @@ import com.ylz.imstomp.bean.ChatMessage;
 import com.ylz.imstomp.bean.ImUser;
 import com.ylz.imstomp.bean.OnlineInfoBean;
 import com.ylz.imstomp.dao.mapper.ImUserMapper;
+import com.ylz.imstomp.dao.mongodb.ImChatLogMongo;
 import com.ylz.imstomp.service.ImService;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,9 @@ public class ImServiceImpl implements ImService {
 
     @Autowired
     private ImUserMapper imUserMapper;
+
+    @Autowired
+    private ImChatLogMongo imChatLogMongo;
 
     @Override
     public String getNick(String userName) {
@@ -48,7 +52,12 @@ public class ImServiceImpl implements ImService {
     }
 
     @Override
-    public List<ChatMessage> listChatMessage(String userName, String type) {
-        return imUserMapper.listChatMessage(userName, type);
+    public List<ChatMessage> listChatMessage(Integer type, String userName) {
+        if (type == 1) {
+            return imChatLogMongo.findChatMessagesByType(type);
+        }
+        
+        return imChatLogMongo.findChatMessagesByTypeAndFromUserNameOrToUserName(type, userName, userName);
     }
+
 }
