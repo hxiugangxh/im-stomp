@@ -7,6 +7,7 @@ import com.ylz.imstomp.constant.Constants;
 import com.ylz.imstomp.dao.mongodb.ImChatLogMongo;
 import com.ylz.imstomp.service.ImChatLogService;
 import com.ylz.imstomp.service.ImService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -28,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Controller
 @RequestMapping("/im")
 public class ImController {
@@ -99,6 +101,7 @@ public class ImController {
 
             OnlineInfoBean onlineInfoBean = imService.listOnlineUser(onlineUserList);
 
+            log.info("brokerOnline--广播在线信息: {}", onlineInfoBean);
             simpMessagingTemplate.convertAndSend(Constants.USER_ONLINE_INFO, onlineInfoBean);
         } catch (Exception e) {
             e.printStackTrace();
@@ -116,7 +119,10 @@ public class ImController {
         Map<String, Object> jsonMap = new HashMap<>();
         boolean flag = true;
         try {
+            log.info("groupChat--保存聊天记录: {}", chatMessage);
             imChatLogService.saveChatLog(chatMessage);
+
+            log.info("groupChat--发送聊天信息: {}", chatMessage);
             simpMessagingTemplate.convertAndSend(Constants.GROUP_CHAT_DES, chatMessage);
         } catch (Exception e) {
             e.printStackTrace();
@@ -156,7 +162,10 @@ public class ImController {
         Map<String, Object> jsonMap = new HashMap<>();
         boolean flag = true;
         try {
+            log.info("singleChat--保存聊天记录: {}", chatMessage);
             imChatLogService.saveChatLog(chatMessage);
+
+            log.info("singleChat--发送聊天信息: {}", chatMessage);
             simpMessagingTemplate.convertAndSendToUser(chatMessage.getToUserName(),
                     Constants.SINGLE_CHAT_DES, chatMessage);
         } catch (Exception e) {
