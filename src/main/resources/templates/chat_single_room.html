@@ -170,6 +170,7 @@
         $(".unload").show();
       }
 
+      var bottom = $("#content")[0].scrollHeight - $("#content").scrollTop();
       for (var i = chatMessageList.length - 1; i >= 0; i--) {
         var clazz = "";
         var chatMessage = chatMessageList[i];
@@ -189,6 +190,8 @@
 
       if ($("#pn").val() == 0) {
         $("#content").scrollTop(999999);
+      } else {
+        $("#content").scrollTop($("#content")[0].scrollHeight - bottom);
       }
     }, "json");
   }
