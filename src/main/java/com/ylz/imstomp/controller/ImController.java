@@ -83,13 +83,15 @@ public class ImController {
     public List<ChatMessage> listChatMessage(
             @RequestParam("type") Integer type,
             @RequestParam(value = "fromUserName", required = false) String fromUserName,
-            @RequestParam(value = "toUserName", required = false) String toUserName) {
+            @RequestParam(value = "toUserName", required = false) String toUserName,
+            @RequestParam(value = "pn") Integer pn,
+            @RequestParam(value = "pageSize") Integer pageSize) {
 
-        log.info("type = {}, fromUserName = {}, toUserName = {}", type, fromUserName, toUserName);
-        log.info("listChatMessage--从mongodb获取聊天记录");
-        List<ChatMessage> chatMessageList = imService.listChatMessage(type, fromUserName, toUserName);
+        log.info("listChatMessage--从mongodb获取聊天记录, type = {}, " +
+                "fromUserName = {}, toUserName = {}, pn = {}, pageSize = {}",
+                type, fromUserName, toUserName, pn, pageSize);
 
-        return chatMessageList;
+        return imService.listChatMessage(type, fromUserName, toUserName, pn, pageSize);
     }
 
     @RequestMapping("/brokerOnline")

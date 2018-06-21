@@ -47,7 +47,7 @@ public class PresenceChannelInterceptor extends ChannelInterceptorAdapter {
     }
 
     private void connect(String sessionId, String accountId) {
-        log.info(" STOMP Connect [sessionId: " + sessionId + ", accountId: " + accountId + "]");
+        log.info(" STOMP connect [accountId: {}, sessionId = {}]", accountId, sessionId);
         //存放至ehcache
         String cacheName = CacheConstant.WEBSOCKET_ACCOUNT;
         //若在多个浏览器登录，直接覆盖保存
@@ -58,11 +58,11 @@ public class PresenceChannelInterceptor extends ChannelInterceptorAdapter {
     private AmqpTemplate amqpTemplate;
 
     private void disconnect(String sessionId, String accountId) {
-        log.info(" STOMP disconnect [sessionId: " + sessionId + ", accountId: " + accountId + "]");
+        log.info(" STOMP disconnect [accountId: {}, sessionId = {}]", accountId, sessionId);
         String cacheName = CacheConstant.WEBSOCKET_ACCOUNT;
         cacheManager.getCache(cacheName).evict(cacheName + accountId);
 
-        amqpTemplate.convertAndSend(AMQConstants.BROKER_STOMP_DISCONNECT, accountId);
+        amqpTemplate.convertAndSend(AMQConstants.BROKER_STOMP_DISCONNECT);
     }
 
 }

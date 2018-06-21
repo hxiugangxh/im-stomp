@@ -8,10 +8,7 @@ import com.ylz.imstomp.dao.mongodb.ImChatLogMongo;
 import com.ylz.imstomp.service.ImService;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -62,9 +59,11 @@ public class ImServiceImpl implements ImService {
     }
 
     @Override
-    public List<ChatMessage> listChatMessage(Integer type, String fromUserName, String toUserName) {
+    public List<ChatMessage> listChatMessage(Integer type, String fromUserName, String toUserName, Integer pn,
+                                             Integer pageSize) {
         Sort sort = new Sort(Sort.Direction.DESC, "sendTime");
-        Pageable pageable = PageRequest.of(0, 10, sort);
+        Pageable pageable = PageRequest.of(pn, pageSize, sort);
+
         if (type == 1) {
             return imChatLogMongo.findChatMessagesByType(type, pageable).getContent();
         }

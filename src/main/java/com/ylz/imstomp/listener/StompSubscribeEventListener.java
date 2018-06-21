@@ -18,16 +18,11 @@ public class StompSubscribeEventListener implements ApplicationListener<SessionS
 
     private static final Logger logger = LoggerFactory.getLogger(StompSubscribeEventListener.class);
 
-    @Autowired
-    private SimpUserRegistry simpUserRegistry;
-    @Autowired
-    private SimpMessagingTemplate simpMessagingTemplate;
-
     @Override
     public void onApplicationEvent(SessionSubscribeEvent sessionSubscribeEvent) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(sessionSubscribeEvent.getMessage());
+//        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(sessionSubscribeEvent.getMessage());
         //这里的sessionId对应HttpSessionIdHandshakeInterceptor拦截器的存放key
 //        String sessionId = headerAccessor.getSessionAttributes().get(Constants.SESSIONID) + "";
-        logger.info("stomp Subscribe : " + headerAccessor.getMessageHeaders());
+//        logger.info("stomp Subscribe : " + headerAccessor.getMessageHeaders());
     }
 }

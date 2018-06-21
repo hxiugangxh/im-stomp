@@ -39,44 +39,37 @@
     li:hover {
       background-color: #428bca;
     }
+
+    .more-info {
+      position: fixed;
+      top: 50px;
+      left: 50%;
+      font-size: 13px;
+      cursor: pointer;
+      z-index: 99999;
+    }
+
+    .load:hover {
+      color: #428bca;
+    }
+
+    .unload {
+      color: #ddd;
+      display: none;
+    }
   </style>
 
 </head>
 <body>
-<div class="modal fade" id="menuModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-            aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="modalLabel">欢迎来到嗨皮聊天室 | WOLFBE.COM</h4>
-      </div>
-      <div class="modal-body">
-        <form class="form-horizontal" id="menuForm">
-          <input type="hidden" name="id" id="id"/>
-          <div class="form-group">
-            <label for="nick" class="col-sm-2 control-label">昵称:</label>
-            <div class="col-sm-10">
-              <input type="text" class="form-control validate[required]" name="nick" id="nick"/>
-            </div>
-          </div>
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="loginBtn">登录</button>
-      </div>
-    </div>
+<div class="more-info">
+  <div class="load" onclick="loadMoreChatMessage()">
+    查看更多信息
   </div>
-</div>
-<div class="modal fade" id="tipModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <!--<div class="modal-header">-->
-      <!--<h4 class="modal-title">提示信息</h4>-->
-      <!--</div>-->
-      <div class="modal-body" id="tipMsg" style="align:center;"></div>
-    </div>
+  <div class="unload" onclick="loadMoreChatMessage()">
+    没有更多信息
   </div>
+  <input id="pn" type="hidden" value="0"/>
+  <input id="pageSize" type="hidden" value="15"/>
 </div>
 
 <div class="container-fluid" id="chatWin" style="width:100%;">
@@ -107,7 +100,7 @@
       <input type="text" id="msg" style="margin:0;width:100%;height:40px;outline:none;"/>
     </div>
     <div class="col-xs-2" style="padding:0;">
-      <button onclick="sendMessage()" style="height:40px;width:100%;outline:none;line-height:40px;">send</button>
+      <button onclick="sendMessage()" style="height:40px;width:100%;outline:none;line-height:40px;">发送</button>
     </div>
   </div>
 </div>
@@ -118,7 +111,7 @@
 <script type="text/javascript" th:src="@{/bootstrap/js/chat.js}"></script>
 <script th:inline="javascript">
   /*<![CDATA[*/
-  $(document).on("click", "li", function() {
+  $(document).on("click", "li", function () {
     var userName = $(this).attr("data-userName");
     if (userName != imUser.userName) {
       var URL = "/im/chatSingleRoom"
@@ -186,6 +179,7 @@
   });
 
   var brokerOnlineFlag = false;
+
   function brokerOnline() {
     console.log("brokerOnline");
     if (!brokerOnlineFlag) {
@@ -221,14 +215,28 @@
     }, "json");
   }
 
+  function loadMoreChatMessage() {
+    var pn = parseInt($("#pn").val()) + 1;
+    $("#pn").val(pn);
+
+    listChatMessage();
+  }
+
   function listChatMessage() {
     var URL = "/im/listChatMessage";
     var formData = {
-      "type": "1"
+      "type": "1",
+      "pn": $("#pn").val(),
+      "pageSize": $("#pageSize").val()
     };
 
     $.post(URL, formData, function (chatMessageList) {
-      for (var i = chatMessageList.length - 1; i >= 0; i--) {
+      if (chatMessageList.length == 0) {
+        $(".load").hide();
+        $(".unload").show();
+      }
+
+      for (var i = 0; i < chatMessageList.length; i++) {
         var clazz = "";
         var chatMessage = chatMessageList[i];
         if (chatMessage.fromUserName == imUser.userName) {
@@ -239,10 +247,14 @@
         html += " <div class='title'>"
         html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
         html += " </div>";
-        html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
+        html += " <div class='item'>" + replaceEm(chatMessage.msg) + "</div>";
         html += "</div>";
 
-        $("#content").append(html);
+        $("#content").prepend(html);
+      }
+
+      if ($("#pn").val() == 0) {
+        $("#content").scrollTop(999999);
       }
     }, "json");
   }
@@ -260,14 +272,15 @@
     html += " <div class='title'>"
     html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
     html += " </div>";
-    html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
+    html += " <div class='item'>" + replaceEm(chatMessage.msg) + "</div>";
     html += "</div>";
 
     $("#msg").val("");
     $("#content").append(html);
+    $("#content").scrollTop(9999999999);
   }
 
-  function replace_em(str) {
+  function replaceEm(str) {
     str = str.replace(/\</g, '&lt;');
     str = str.replace(/\>/g, '&gt;');
     str = str.replace(/\n/g, '<br/>');
