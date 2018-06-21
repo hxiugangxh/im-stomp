@@ -3,7 +3,7 @@
 <meta charset="UTF-8"/>
 <head>
   <link rel="icon" href="./favicon.ico"/>
-  <title>单聊</title>
+  <title th:text="${toImUser.nick}"></title>
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" th:href="@{/bootstrap/css/bootstrap.min.css}"/>
   <link rel="stylesheet" th:href="@{/bootstrap/css/reset.css}"/>
@@ -158,13 +158,14 @@
   function listChatMessage() {
     var URL = "/im/listChatMessage";
     var formData = {
-      "userName": imUser.userName,
+      "fromUserName": imUser.userName,
+      "toUserName": toImUser.userName,
       "type": "0"
     };
 
     $.post(URL, formData, function (chatMessageList) {
       var domEle = "";
-      for (var i = 0; i < chatMessageList.length; i++) {
+      for (var i = chatMessageList.length - 1; i >= 0; i--) {
         var clazz = "";
         var chatMessage = chatMessageList[i];
         if (chatMessage.fromUserName == imUser.userName) {

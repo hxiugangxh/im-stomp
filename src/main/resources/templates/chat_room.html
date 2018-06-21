@@ -35,6 +35,10 @@
     li {
       cursor: pointer;
     }
+
+    li:hover {
+      background-color: #428bca;
+    }
   </style>
 
 </head>
@@ -76,8 +80,7 @@
 </div>
 
 <div class="container-fluid" id="chatWin" style="width:100%;">
-  <div class="row top">
-
+  <div class="row top" style="background-color: #6cb4f1;">
     <div class="col-sm-12" id="top">
       <div style="color:#fff;">
         在线人数：<span id="userCount" style="color:#fff;">0</span> 人
@@ -115,6 +118,18 @@
 <script type="text/javascript" th:src="@{/bootstrap/js/chat.js}"></script>
 <script th:inline="javascript">
   /*<![CDATA[*/
+  $(document).on("click", "li", function() {
+    var userName = $(this).attr("data-userName");
+    if (userName != imUser.userName) {
+      var URL = "/im/chatSingleRoom"
+        + "?toUserName=" + userName;
+      window.open(URL);
+    }
+  });
+  /*]]>*/
+</script>
+<script th:inline="javascript">
+  /*<![CDATA[*/
   //链接endpoint名称为 "/endpointChat" 的endpoint。
   var imUser = [[${imUser}]];
   jQuery(function () {
@@ -139,14 +154,17 @@
             for (var i = 0; i < imUserList.length; i++) {
               if (imUserList[i].userName != imUser.userName) {
                 if (imUserList[i].online == "1") {
-                  onlineDomEle += "<li class='list-group-item'>" + imUserList[i].userName + "</li>";
+                  onlineDomEle += "<li class='list-group-item' data-userName='" + imUserList[i].userName + "'>"
+                    + imUserList[i].nick + "</li>";
                 } else {
-                  domEle += "<li class='list-group-item gray'>" + imUserList[i].userName + "</li>";
+                  domEle += "<li class='list-group-item gray' data-userName='" + imUserList[i].userName + "'>"
+                    + imUserList[i].nick + "</li>";
                 }
               }
             }
 
-            var itselfDomEle = "<li class='list-group-item red'>" + imUser.userName + "</li>";
+            var itselfDomEle = "<li class='list-group-item red' data-userName='" + imUser.userName + "'>"
+              + imUser.nick + "</li>";
 
             // 自己 + 在线 + 不在线
             $("#imUserList").html(itselfDomEle + onlineDomEle + domEle);
@@ -206,12 +224,11 @@
   function listChatMessage() {
     var URL = "/im/listChatMessage";
     var formData = {
-      "userName": imUser.userName,
       "type": "1"
     };
 
     $.post(URL, formData, function (chatMessageList) {
-      for (var i = 0; i < chatMessageList.length; i++) {
+      for (var i = chatMessageList.length - 1; i >= 0; i--) {
         var clazz = "";
         var chatMessage = chatMessageList[i];
         if (chatMessage.fromUserName == imUser.userName) {

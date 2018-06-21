@@ -29,11 +29,6 @@ public class MqReceiver {
     @Autowired
     private ImService imService;
 
-    @RabbitListener(queuesToDeclare = @Queue("myQueue"))
-    public void process(String message) {
-        log.info("MqReceiver.process: {}", message);
-    }
-
     @RabbitListener(queuesToDeclare = @Queue(AMQConstants.BROKER_STOMP_DISCONNECT))
     public void brokerDisconnect(String accountId) {
 

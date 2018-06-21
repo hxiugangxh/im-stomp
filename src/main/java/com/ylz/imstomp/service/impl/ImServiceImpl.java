@@ -12,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +30,9 @@ public class ImServiceImpl implements ImService {
 
     @Autowired
     private ImChatLogMongo imChatLogMongo;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Override
     public String getNick(String userName) {
@@ -56,14 +62,22 @@ public class ImServiceImpl implements ImService {
     }
 
     @Override
-    public Page<ChatMessage> listChatMessage(Integer type, String userName) {
+    public List<ChatMessage> listChatMessage(Integer type, String fromUserName, String toUserName) {
         Sort sort = new Sort(Sort.Direction.DESC, "sendTime");
         Pageable pageable = PageRequest.of(0, 10, sort);
         if (type == 1) {
-            return imChatLogMongo.findChatMessagesByType(type, pageable);
+            return imChatLogMongo.findChatMessagesByType(type, pageable).getContent();
         }
 
-        return imChatLogMongo.findChatMessagesByTypeAndFromUserNameOrToUserName(type, userName, userName, pageable);
+        Query query = new Query(
+                new Criteria().orOperator(
+                        Criteria.where("fromUserName").is(fromUserName).and("toUserName").is(toUserName),
+                        Criteria.where("fromUserName").is(toUserName).and("toUserName").is(fromUserName)
+                ))
+                .with(sort)
+                .with(pageable);
+
+        return mongoTemplate.find(query, ChatMessage.class);
     }
 
 }
