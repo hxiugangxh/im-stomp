@@ -62,7 +62,7 @@ public class ImServiceImpl implements ImService {
     public List<ChatMessage> listChatMessage(Integer type, String fromUserName, String toUserName, Integer pn,
                                              Integer pageSize) {
         Sort sort = new Sort(Sort.Direction.DESC, "sendTime");
-        Pageable pageable = PageRequest.of(pn, pageSize, sort);
+        Pageable pageable = new PageRequest(pn, pageSize, sort);
 
         if (type == 1) {
             return imChatLogMongo.findChatMessagesByType(type, pageable).getContent();

@@ -29,7 +29,7 @@ public class MqReceiver {
     @Autowired
     private ImService imService;
 
-    @RabbitListener(queuesToDeclare = @Queue(AMQConstants.BROKER_STOMP_DISCONNECT))
+    @RabbitListener(queues = AMQConstants.BROKER_STOMP_DISCONNECT)
     public void brokerDisconnect() {
         List<String> onlineUserList = new ArrayList<>();
         for (SimpUser simpUser : simpUserRegistry.getUsers()) {

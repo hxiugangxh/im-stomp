@@ -1,6 +1,6 @@
 spring:
   session:
-    store-type: none
+    store-type: REDIS
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost/webqq?useUnicode=yes&characterEncoding=UTF-8&useSSL=false
@@ -21,9 +21,10 @@ spring:
   data:
     mongodb:
       uri: mongodb://sso:841017@localhost:27017/sso
-
-server:
-  port: 8090
+  redis:
+    host: localhost
+    password: 123456
+    port: 6379
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml
@@ -38,3 +39,5 @@ imooc:
 logging:
   level:
     com.ylz.imstomp.dao.mapper: debug
+server:
+  port: 8081

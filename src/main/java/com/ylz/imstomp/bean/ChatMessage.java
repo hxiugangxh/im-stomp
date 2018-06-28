@@ -20,6 +20,8 @@ public class ChatMessage implements Serializable {
     private String msg; // 消息
     private Date sendTime; // 发送时间
 
+    private Integer readFlag = 0; // 0：未读；1：已读
+
     public ChatMessage() {}
 
     public ChatMessage(String msg) {

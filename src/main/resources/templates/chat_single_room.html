@@ -171,7 +171,7 @@
       }
 
       var bottom = $("#content")[0].scrollHeight - $("#content").scrollTop();
-      for (var i = chatMessageList.length - 1; i >= 0; i--) {
+      for (var i = 0; i < chatMessageList.length; i++) {
         var clazz = "";
         var chatMessage = chatMessageList[i];
         if (chatMessage.fromUserName == imUser.userName) {
