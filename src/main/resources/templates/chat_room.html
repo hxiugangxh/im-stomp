@@ -57,6 +57,15 @@
       color: #ddd;
       display: none;
     }
+
+    .no-read {
+      line-height: 39px;
+      vertical-align: center;
+      position: absolute;
+      top: 0px;
+      right: 15px;
+      color: red;
+    }
   </style>
 
 </head>
@@ -148,10 +157,10 @@
               if (imUserList[i].userName != imUser.userName) {
                 if (imUserList[i].online == "1") {
                   onlineDomEle += "<li class='list-group-item' data-userName='" + imUserList[i].userName + "'>"
-                    + imUserList[i].nick + "</li>";
+                    + imUserList[i].nick + "<span class='no-read'>" + imUserList[i].noReadCount + "</span></li>";
                 } else {
                   domEle += "<li class='list-group-item gray' data-userName='" + imUserList[i].userName + "'>"
-                    + imUserList[i].nick + "</li>";
+                    + imUserList[i].nick + "<span class='no-read'>" + imUserList[i].noReadCount + "</span></li>";
                 }
               }
             }
@@ -181,7 +190,6 @@
   var brokerOnlineFlag = false;
 
   function brokerOnline() {
-    console.log("brokerOnline");
     if (!brokerOnlineFlag) {
       var URL = "/im/brokerOnline";
       $.post(URL, {}, function (jsonData) {

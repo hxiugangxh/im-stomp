@@ -180,7 +180,7 @@
         var html = "";
         html += "<div class='" + clazz + "'>";
         html += " <div class='title'>"
-        html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
+        html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss") + "（未读）";
         html += " </div>";
         html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
         html += "</div>";
@@ -208,7 +208,7 @@
     var html = "";
     html += "<div class='" + clazz + "'>";
     html += " <div class='title'>"
-    html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
+    html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss") + "未读";
     html += " </div>";
     html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
     html += "</div>";

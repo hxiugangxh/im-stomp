@@ -62,7 +62,7 @@ public class PresenceChannelInterceptor extends ChannelInterceptorAdapter {
         String cacheName = CacheConstant.WEBSOCKET_ACCOUNT;
         cacheManager.getCache(cacheName).evict(cacheName + accountId);
 
-        amqpTemplate.convertAndSend(AMQConstants.BROKER_STOMP_DISCONNECT);
+        amqpTemplate.convertAndSend(AMQConstants.BROKER_STOMP_DISCONNECT, accountId);
     }
 
 }

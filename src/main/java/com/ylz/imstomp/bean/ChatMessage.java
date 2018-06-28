@@ -22,6 +22,8 @@ public class ChatMessage implements Serializable {
 
     private Integer readFlag = 0; // 0：未读；1：已读
 
+    private Integer noReadCount; // 未读总数
+
     public ChatMessage() {}
 
     public ChatMessage(String msg) {

@@ -3,23 +3,23 @@ package com.ylz.imstomp.controller;
 import com.ylz.imstomp.bean.ChatMessage;
 import com.ylz.imstomp.bean.ImUser;
 import com.ylz.imstomp.bean.OnlineInfoBean;
+import com.ylz.imstomp.constant.AMQConstants;
 import com.ylz.imstomp.constant.Constants;
-import com.ylz.imstomp.dao.mongodb.ImChatLogMongo;
+import com.ylz.imstomp.dao.mongodb.ImChatLogMongoJpa;
 import com.ylz.imstomp.service.ImChatLogService;
 import com.ylz.imstomp.service.ImService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
-import org.springframework.data.domain.Page;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -51,7 +51,7 @@ public class ImController {
     private ImChatLogService imChatLogService;
 
     @Autowired
-    private ImChatLogMongo imChatLogMongo;
+    private ImChatLogMongoJpa imChatLogMongo;
 
     @RequestMapping("/look")
     @ResponseBody
@@ -95,10 +95,6 @@ public class ImController {
             @RequestParam(value = "pn") Integer pn,
             @RequestParam(value = "pageSize") Integer pageSize) {
 
-        log.info("listChatMessage--从mongodb获取聊天记录, type = {}, " +
-                "fromUserName = {}, toUserName = {}, pn = {}, pageSize = {}",
-                type, fromUserName, toUserName, pn, pageSize);
-
         return imService.listChatMessage(type, fromUserName, toUserName, pn, pageSize);
     }
 
@@ -125,6 +121,18 @@ public class ImController {
         jsonMap.put("flag", flag);
 
         return jsonMap;
+    }
+
+    @Autowired
+    private AmqpTemplate amqpTemplate;
+
+    @RequestMapping("/sendMQ")
+    @ResponseBody
+    public String sendMQ() {
+
+        amqpTemplate.convertAndSend(AMQConstants.BROKER_STOMP_DISCONNECT, "123123");
+
+        return "test1231";
     }
 
     @RequestMapping("/groupChat")

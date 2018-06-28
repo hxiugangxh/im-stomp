@@ -1,6 +1,6 @@
 spring:
   session:
-    store-type: REDIS
+    store-type: none
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
     url: jdbc:mysql://localhost/webqq?useUnicode=yes&characterEncoding=UTF-8&useSSL=false

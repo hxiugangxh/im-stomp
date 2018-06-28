@@ -8,4 +8,5 @@ public class ImUser {
     private String userName;
     private String nick;
     private String online = "0";
+    private Integer noReadCount = 0;
 }
