@@ -192,8 +192,8 @@
         var html = "";
         html += "<div class='" + clazz + "'>";
         html += " <div class='title'>"
-        html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
         html += "<span class='no-read'>" + readMsg + "</span>";
+        html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
         html += " </div>";
         html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
         html += "</div>";
@@ -214,14 +214,20 @@
       return;
     }
 
+    var readMsg = "";
     var clazz = "other";
     if (chatMessage.fromUserName == imUser.userName) {
       clazz = "myself";
+
+      if (chatMessage.readFlag == 0) {
+        readMsg = "（未读）";
+      }
     }
 
     var html = "";
     html += "<div class='" + clazz + "'>";
     html += " <div class='title'>";
+    html += "<span class='no-read'>" + readMsg + "</span>";
     html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
     html += " </div>";
     html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";

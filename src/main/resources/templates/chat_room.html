@@ -147,6 +147,16 @@
           showResponse(chatMesssage);
         });
 
+        stompClient.subscribe('/user/queue/roomRead', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
+          var imUser = JSON.parse(respnose.body);
+
+          if (imUser.noReadCount > 0) {
+            $("." + imUser.userName + " .no-read").html(imUser.noReadCount);
+          } else {
+            $("." + imUser.userName + " .no-read").html("");
+          }
+        });
+
         stompClient.subscribe('/topic/online', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
           var onlineInfoBean = JSON.parse(respnose.body);
           $("#userCount").html(onlineInfoBean.userCount);
@@ -159,16 +169,18 @@
               if (imUserList[i].userName != imUser.userName) {
                 var noReadCount = (imUserList[i].noReadCount > 0) ? imUserList[i].noReadCount : "";
                 if (imUserList[i].online == "1") {
-                  onlineDomEle += "<li class='list-group-item' data-userName='" + imUserList[i].userName + "'>"
+                  onlineDomEle += "<li class='list-group-item " + imUserList[i].userName
+                    + "' data-userName='" + imUserList[i].userName + "'>"
                     + imUserList[i].nick + "<span class='no-read'>" + noReadCount + "</span></li>";
                 } else {
-                  domEle += "<li class='list-group-item gray' data-userName='" + imUserList[i].userName + "'>"
+                  domEle += "<li class='list-group-item gray " + imUserList[i].userName
+                    + "' data-userName='" + imUserList[i].userName + "'>"
                     + imUserList[i].nick + "<span class='no-read'>" + noReadCount + "</span></li>";
                 }
               }
             }
 
-            var itselfDomEle = "<li class='list-group-item red' data-userName='" + imUser.userName + "'>"
+            var itselfDomEle = "<li class='list-group-item red " + imUser.userName + "' data-userName='" + imUser.userName + "'>"
               + imUser.nick + "</li>";
 
             // 自己 + 在线 + 不在线

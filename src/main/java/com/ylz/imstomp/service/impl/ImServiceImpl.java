@@ -3,15 +3,13 @@ package com.ylz.imstomp.service.impl;
 import com.ylz.imstomp.bean.ChatMessage;
 import com.ylz.imstomp.bean.ImUser;
 import com.ylz.imstomp.bean.OnlineInfoBean;
-import com.ylz.imstomp.dao.mongodb.ImChatMongoDao;
 import com.ylz.imstomp.dao.mapper.ImUserMapper;
-import com.ylz.imstomp.dao.mongodb.ImChatLogMongoJpa;
+import com.ylz.imstomp.dao.mongodb.ImChatMongoDao;
 import com.ylz.imstomp.service.ImService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import sun.rmi.runtime.Log;
 
 import java.util.List;
 import java.util.Map;
@@ -74,5 +72,10 @@ public class ImServiceImpl implements ImService {
     @Override
     public void readChatMessage(String fromUserName, String toUserName) {
         imChatMongoDao.readChatMessage(fromUserName, toUserName);
+    }
+
+    @Override
+    public ImUser getImUserCount(String fromUserName, String toUserName) {
+        return imChatMongoDao.getImUserCount(fromUserName, toUserName);
     }
 }

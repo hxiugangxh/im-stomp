@@ -24,6 +24,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sun.text.resources.cldr.mr.FormatData_mr;
 
 import java.security.Principal;
 import java.util.ArrayList;
@@ -50,9 +51,6 @@ public class ImController {
 
     @Autowired
     private ImChatLogService imChatLogService;
-
-    @Autowired
-    private ImChatLogMongoJpa imChatLogMongo;
 
     @RequestMapping("/look")
     @ResponseBody
@@ -100,7 +98,7 @@ public class ImController {
             imService.readChatMessage(fromUserName, toUserName);
             log.info("发送已读fromUserName = {}", fromUserName);
             simpMessagingTemplate.convertAndSendToUser(toUserName,
-                    Constants.SINGLE_CHAT_DES_READ, "read");
+                    Constants.SINGLE_CHAT_READ_DES, "read");
         }
 
         return imService.listChatMessage(type, fromUserName, toUserName, pn, pageSize);
@@ -112,11 +110,18 @@ public class ImController {
             @RequestParam(value = "fromUserName") String fromUserName,
             @RequestParam(value = "toUserName") String toUserName) {
 
-        log.info("readChatMessage");
         imService.readChatMessage(toUserName, fromUserName);
         log.info("toUserName = {}", toUserName);
+
+        // 发送我已经阅读了你的信息
         simpMessagingTemplate.convertAndSendToUser(fromUserName,
-                Constants.SINGLE_CHAT_DES_READ, "read");
+                Constants.SINGLE_CHAT_READ_DES, "read");
+
+        // 已经阅读则都为0
+        ImUser imUser = new ImUser();
+        imUser.setUserName(fromUserName);
+        simpMessagingTemplate.convertAndSendToUser(toUserName,
+                Constants.SINGLE_CHAT_READ_ROOM_DES, imUser);
 
         Map<String, Object> jsonMap = new HashMap<>();
 
@@ -152,15 +157,8 @@ public class ImController {
 
     @RequestMapping("/groupChat")
     @ResponseBody
-    public Map<String, Object> groupChat(ChatMessage chatMessage,
-                                         @RequestParam(value = "action", defaultValue = "sendMsg") String action) {
+    public Map<String, Object> groupChat(ChatMessage chatMessage) {
         Map<String, Object> jsonMap = new HashMap<>();
-        if ("read".equals(action)) {
-            imService.readChatMessage(chatMessage.getFromUserName(), chatMessage.getToUserName());
-
-            jsonMap.put("flag", true);
-            return jsonMap;
-        }
         // 默认群聊为已读
         chatMessage.setReadFlag(1);
 
@@ -215,6 +213,10 @@ public class ImController {
             log.info("singleChat--发送聊天信息: {}", chatMessage);
             simpMessagingTemplate.convertAndSendToUser(chatMessage.getToUserName(),
                     Constants.SINGLE_CHAT_DES, chatMessage);
+
+            ImUser imUser = imService.getImUserCount(chatMessage.getFromUserName(), chatMessage.getToUserName());
+            simpMessagingTemplate.convertAndSendToUser(chatMessage.getToUserName(),
+                    Constants.SINGLE_CHAT_READ_ROOM_DES, imUser);
         } catch (Exception e) {
             e.printStackTrace();
             flag = false;

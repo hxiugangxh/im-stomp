@@ -1,9 +1,12 @@
 package com.ylz.imstomp.dao.mongodb.impl;
 
 import com.ylz.imstomp.bean.ChatMessage;
+import com.ylz.imstomp.bean.ImUser;
 import com.ylz.imstomp.dao.mongodb.ImChatLogMongoJpa;
 import com.ylz.imstomp.dao.mongodb.ImChatMongoDao;
+import com.ylz.imstomp.util.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -58,7 +61,7 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
         paramMap.put("toUserName", toUserName);
         paramMap.put("pn", pn);
         paramMap.put("pageSize", pageSize);
-        log.info("listChatMessage--从mongodb获取聊天记录:\n{},\n参数: {}", query.toString(), paramMap);
+        log.info("listChatMessage--从mongodb获取聊天记录:\n{},\n参数: {}", JSONUtil.format(query.toString()), paramMap);
 
         return mongoTemplate.find(query, ChatMessage.class);
     }
@@ -69,7 +72,7 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
         TypedAggregation<ChatMessage> aggregation = newAggregation(
                 ChatMessage.class,
 
-                match( new Criteria().andOperator(
+                match(new Criteria().andOperator(
                         Criteria.where("toUserName").exists(true),
                         Criteria.where("readFlag").is(0)
                 )),
@@ -78,7 +81,7 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
                         .count().as("noReadCount")
         );
 
-        log.info("listNoReadChatMessage--从mongdb汇聚出未读数据: " + aggregation.toString());
+        log.info("listNoReadChatMessage--从mongdb汇聚出未读数据:\n{}", JSONUtil.format(aggregation.toString()));
 
         List<ChatMessage> chatMessageList = mongoTemplate.aggregate(aggregation, ChatMessage.class).getMappedResults();
 
@@ -89,7 +92,7 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
 
     @Override
     public void readChatMessage(String fromUserName, String toUserName) {
-        Query query =  new Query(
+        Query query = new Query(
                 new Criteria().andOperator(
                         Criteria.where("fromUserName").is(toUserName),
                         Criteria.where("toUserName").is(fromUserName)
@@ -98,5 +101,37 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
 
         log.info("readChatMessage: {}", query.toString());
         mongoTemplate.updateMulti(query, update("readFlag", 1), ChatMessage.class);
+    }
+
+    @Override
+    public ImUser getImUserCount(String fromUserName, String toUserName) {
+        TypedAggregation<ChatMessage> aggregation = newAggregation(
+                ChatMessage.class,
+
+                match(new Criteria().andOperator(
+                        Criteria.where("fromUserName").is(fromUserName),
+                        Criteria.where("toUserName").is(toUserName),
+                        Criteria.where("readFlag").is(0)
+                )),
+                group("fromUserName")
+                        .first("fromUserName").as("fromUserName")
+                        .count().as("noReadCount")
+        );
+
+        log.info("getImUserCount--获取对象的未读信息:\n{}: ", JSONUtil.format(aggregation.toString()));
+
+        List<ChatMessage> chatMessageList = mongoTemplate.aggregate(aggregation, ChatMessage.class).getMappedResults();
+
+        System.out.println(chatMessageList);
+
+        ImUser imUser = new ImUser();
+        if (CollectionUtils.isNotEmpty(chatMessageList)) {
+            imUser.setUserName(chatMessageList.get(0).getFromUserName());
+            imUser.setNoReadCount(chatMessageList.get(0).getNoReadCount());
+        }
+
+        System.out.println("获取: " + imUser);
+
+        return imUser;
     }
 }

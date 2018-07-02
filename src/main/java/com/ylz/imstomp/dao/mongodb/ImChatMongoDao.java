@@ -12,4 +12,6 @@ public interface ImChatMongoDao {
     List<ChatMessage> listNoReadChatMessage();
 
     void readChatMessage(String fromUserName, String toUserName);
+
+    ImUser getImUserCount(String fromUserName, String toUserName);
 }

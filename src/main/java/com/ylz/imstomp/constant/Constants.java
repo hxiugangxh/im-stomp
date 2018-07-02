@@ -20,12 +20,17 @@ public class Constants {
     /**
      * 单聊地址-已读广播
      */
-    public static final String SINGLE_CHAT_DES_READ = "/queue/read";
+    public static final String SINGLE_CHAT_READ_DES = "/queue/read";
 
     /**
      * 群聊地址
      */
     public static final String GROUP_CHAT_DES = "/topic/getResponse";
+
+    /**
+     * 群聊地址
+     */
+    public static final String SINGLE_CHAT_READ_ROOM_DES = "/queue/roomRead";
 
     /**
      * 在线信息广播
