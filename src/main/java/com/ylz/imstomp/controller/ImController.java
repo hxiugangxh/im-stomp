@@ -6,6 +6,7 @@ import com.ylz.imstomp.bean.OnlineInfoBean;
 import com.ylz.imstomp.constant.AMQConstants;
 import com.ylz.imstomp.constant.Constants;
 import com.ylz.imstomp.dao.mongodb.ImChatLogMongoJpa;
+import com.ylz.imstomp.dao.mongodb.ImChatMongoDao;
 import com.ylz.imstomp.service.ImChatLogService;
 import com.ylz.imstomp.service.ImService;
 import lombok.extern.slf4j.Slf4j;
@@ -95,7 +96,33 @@ public class ImController {
             @RequestParam(value = "pn") Integer pn,
             @RequestParam(value = "pageSize") Integer pageSize) {
 
+        if (type == 0) {
+            imService.readChatMessage(fromUserName, toUserName);
+            log.info("发送已读fromUserName = {}", fromUserName);
+            simpMessagingTemplate.convertAndSendToUser(toUserName,
+                    Constants.SINGLE_CHAT_DES_READ, "read");
+        }
+
         return imService.listChatMessage(type, fromUserName, toUserName, pn, pageSize);
+    }
+
+    @RequestMapping("/readChatMessage")
+    @ResponseBody
+    public Map<String, Object> readChatMessage(
+            @RequestParam(value = "fromUserName") String fromUserName,
+            @RequestParam(value = "toUserName") String toUserName) {
+
+        log.info("readChatMessage");
+        imService.readChatMessage(toUserName, fromUserName);
+        log.info("toUserName = {}", toUserName);
+        simpMessagingTemplate.convertAndSendToUser(fromUserName,
+                Constants.SINGLE_CHAT_DES_READ, "read");
+
+        Map<String, Object> jsonMap = new HashMap<>();
+
+        jsonMap.put("flag", true);
+
+        return jsonMap;
     }
 
     @RequestMapping("/brokerOnline")
@@ -123,22 +150,20 @@ public class ImController {
         return jsonMap;
     }
 
-    @Autowired
-    private AmqpTemplate amqpTemplate;
-
-    @RequestMapping("/sendMQ")
-    @ResponseBody
-    public String sendMQ() {
-
-        amqpTemplate.convertAndSend(AMQConstants.BROKER_STOMP_DISCONNECT, "123123");
-
-        return "test1231";
-    }
-
     @RequestMapping("/groupChat")
     @ResponseBody
-    public Map<String, Object> groupChat(ChatMessage chatMessage) {
+    public Map<String, Object> groupChat(ChatMessage chatMessage,
+                                         @RequestParam(value = "action", defaultValue = "sendMsg") String action) {
         Map<String, Object> jsonMap = new HashMap<>();
+        if ("read".equals(action)) {
+            imService.readChatMessage(chatMessage.getFromUserName(), chatMessage.getToUserName());
+
+            jsonMap.put("flag", true);
+            return jsonMap;
+        }
+        // 默认群聊为已读
+        chatMessage.setReadFlag(1);
+
         boolean flag = true;
         try {
             log.info("groupChat--保存聊天记录: {}", chatMessage);

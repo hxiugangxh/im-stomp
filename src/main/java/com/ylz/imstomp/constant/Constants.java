@@ -18,6 +18,11 @@ public class Constants {
     public static final String SINGLE_CHAT_DES = "/queue/notifications";
 
     /**
+     * 单聊地址-已读广播
+     */
+    public static final String SINGLE_CHAT_DES_READ = "/queue/read";
+
+    /**
      * 群聊地址
      */
     public static final String GROUP_CHAT_DES = "/topic/getResponse";

@@ -11,5 +11,4 @@ import java.util.Map;
 public interface ImChatLogMongoJpa extends MongoRepository<ChatMessage, Integer> {
 
     Page<ChatMessage> findChatMessagesByType(Integer type, Pageable pageable);
-
 }

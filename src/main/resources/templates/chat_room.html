@@ -125,6 +125,8 @@
     if (userName != imUser.userName) {
       var URL = "/im/chatSingleRoom"
         + "?toUserName=" + userName;
+      // 默认打开就为已读
+      $(this).find(".no-read").html("");
       window.open(URL);
     }
   });
@@ -155,12 +157,13 @@
             var domEle = "";
             for (var i = 0; i < imUserList.length; i++) {
               if (imUserList[i].userName != imUser.userName) {
+                var noReadCount = (imUserList[i].noReadCount > 0) ? imUserList[i].noReadCount : "";
                 if (imUserList[i].online == "1") {
                   onlineDomEle += "<li class='list-group-item' data-userName='" + imUserList[i].userName + "'>"
-                    + imUserList[i].nick + "<span class='no-read'>" + imUserList[i].noReadCount + "</span></li>";
+                    + imUserList[i].nick + "<span class='no-read'>" + noReadCount + "</span></li>";
                 } else {
                   domEle += "<li class='list-group-item gray' data-userName='" + imUserList[i].userName + "'>"
-                    + imUserList[i].nick + "<span class='no-read'>" + imUserList[i].noReadCount + "</span></li>";
+                    + imUserList[i].nick + "<span class='no-read'>" + noReadCount + "</span></li>";
                 }
               }
             }

@@ -12,6 +12,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
+import static org.springframework.data.mongodb.core.query.Update.update;
 
 @Slf4j
 @Repository("imChatMongoDao")
@@ -34,7 +36,6 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
     @Override
     public List<ChatMessage> listChatMessage(Integer type, String fromUserName, String toUserName, Integer pn,
                                              Integer pageSize) {
-
 
         Sort sort = new Sort(DESC, "sendTime");
         Pageable pageable = new PageRequest(pn, pageSize, sort);
@@ -72,8 +73,8 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
                         Criteria.where("toUserName").exists(true),
                         Criteria.where("readFlag").is(0)
                 )),
-                group("toUserName")
-                        .first("toUserName").as("toUserName")
+                group("fromUserName")
+                        .first("fromUserName").as("fromUserName")
                         .count().as("noReadCount")
         );
 
@@ -84,5 +85,18 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
         System.out.println(chatMessageList);
 
         return chatMessageList;
+    }
+
+    @Override
+    public void readChatMessage(String fromUserName, String toUserName) {
+        Query query =  new Query(
+                new Criteria().andOperator(
+                        Criteria.where("fromUserName").is(toUserName),
+                        Criteria.where("toUserName").is(fromUserName)
+                )
+        );
+
+        log.info("readChatMessage: {}", query.toString());
+        mongoTemplate.updateMulti(query, update("readFlag", 1), ChatMessage.class);
     }
 }

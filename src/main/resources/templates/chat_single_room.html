@@ -113,6 +113,12 @@
 
           showResponse(chatMesssage);
         });
+
+        stompClient.subscribe('/user/queue/read', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
+          if (respnose.body == "read") {
+            $(".myself .no-read").html("");
+          }
+        });
       }, function (error) {
         // 连接失败时（服务器响应 ERROR 帧）的回调方法
         document.getElementById("state-info").innerHTML = "连接失败";
@@ -137,7 +143,8 @@
       "toUserName": toImUser.userName,
       "toNick": toImUser.nick,
       "msg": msg,
-      "sendTime": new Date()
+      "sendTime": new Date(),
+      "readFlag": 0
     };
     $.post(URL, formData, function (jsonData) {
       showResponse(formData);
@@ -172,15 +179,21 @@
 
       var bottom = $("#content")[0].scrollHeight - $("#content").scrollTop();
       for (var i = 0; i < chatMessageList.length; i++) {
-        var clazz = "";
+        var clazz = "other";
+        var readMsg = "";
         var chatMessage = chatMessageList[i];
         if (chatMessage.fromUserName == imUser.userName) {
           clazz = "myself";
         }
+        if (chatMessage.readFlag == 0) {
+          readMsg = "（未读）";
+        }
+
         var html = "";
         html += "<div class='" + clazz + "'>";
         html += " <div class='title'>"
-        html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss") + "（未读）";
+        html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
+        html += "<span class='no-read'>" + readMsg + "</span>";
         html += " </div>";
         html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
         html += "</div>";
@@ -201,14 +214,15 @@
       return;
     }
 
-    var clazz = "";
+    var clazz = "other";
     if (chatMessage.fromUserName == imUser.userName) {
       clazz = "myself";
     }
+
     var html = "";
     html += "<div class='" + clazz + "'>";
-    html += " <div class='title'>"
-    html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss") + "未读";
+    html += " <div class='title'>";
+    html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
     html += " </div>";
     html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
     html += "</div>";
@@ -216,6 +230,20 @@
     $("#msg").val("");
     $("#content").append(html);
     $("#content").scrollTop(9999999999);
+
+    if (chatMessage.readFlag == 0 && chatMessage.fromUserName != imUser.userName) {
+      readChatMessage(chatMessage);
+    }
+  }
+
+  function readChatMessage(chatMessage) {
+    var URL = "readChatMessage";
+
+    $.post(URL, chatMessage, function(jsonData) {
+      if (!jsonData.flag) {
+        alert("反馈已读失败, 请与管理员联系");
+      }
+    }, "json");
   }
 
   function replace_em(str) {

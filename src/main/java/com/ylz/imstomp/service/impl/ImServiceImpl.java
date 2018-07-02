@@ -50,7 +50,7 @@ public class ImServiceImpl implements ImService {
                 userCount.getAndSet(userCount.get() + 1);
             }
             chatMessageList.forEach(chatMessage -> {
-                if (imUser.getUserName().equals(chatMessage.getToUserName())) {
+                if (imUser.getUserName().equals(chatMessage.getFromUserName())) {
                     imUser.setNoReadCount(chatMessage.getNoReadCount());
                 }
             });
@@ -71,4 +71,8 @@ public class ImServiceImpl implements ImService {
         return imChatMongoDao.listChatMessage(type, fromUserName, toUserName, pn, pageSize);
     }
 
+    @Override
+    public void readChatMessage(String fromUserName, String toUserName) {
+        imChatMongoDao.readChatMessage(fromUserName, toUserName);
+    }
 }

@@ -10,4 +10,6 @@ public interface ImChatMongoDao {
     
 
     List<ChatMessage> listNoReadChatMessage();
+
+    void readChatMessage(String fromUserName, String toUserName);
 }
