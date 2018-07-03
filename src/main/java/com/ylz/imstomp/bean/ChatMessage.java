@@ -24,6 +24,10 @@ public class ChatMessage implements Serializable {
 
     private Integer noReadCount; // 未读总数
 
+    // filepath + md5(目录) + name(文件)
+    private String md5;
+    private String name;
+
     public ChatMessage() {}
 
     public ChatMessage(String msg) {

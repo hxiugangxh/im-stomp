@@ -1,8 +1,8 @@
 package com.ylz.imstomp.service.impl;
 
 import com.ylz.imstomp.bean.MultipartFileParam;
+import com.ylz.imstomp.constant.Constants;
 import com.ylz.imstomp.service.StorageService;
-import com.ylz.imstomp.util.Constants;
 import com.ylz.imstomp.util.FileMD5Util;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -22,6 +22,7 @@ import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Set;
 
 /**
  * Created by 超文 on 2017/5/2.
@@ -53,7 +54,11 @@ public class StorageServiceImpl implements StorageService {
         logger.info("开发初始化清理数据，start");
         FileSystemUtils.deleteRecursively(rootPaht.toFile());
         stringRedisTemplate.delete(Constants.FILE_UPLOAD_STATUS);
-        stringRedisTemplate.delete(Constants.FILE_MD5_KEY);
+        Set<String> keys = stringRedisTemplate.keys(Constants.FILE_MD5_KEY + "*");
+        for (String key : keys) {
+            stringRedisTemplate.delete(key);
+        }
+
         logger.info("开发初始化清理数据，end");
     }
 

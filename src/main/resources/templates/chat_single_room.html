@@ -34,6 +34,16 @@
       color: #ddd;
     }
 
+    .info {
+      color: #6cb4f1;
+      text-decoration: underline;
+    }
+
+    .blue {
+      color: #6cb4f1;
+      text-decoration: underline;
+    }
+
     .more-info {
       position: fixed;
       top: 50px;
@@ -55,15 +65,19 @@
       color: #ddd;
       display: none;
     }
+
     .webuploader-pick {
-      height:40px;
-      width:100%;
-      outline:none;
-      line-height:40px;
+      height: 40px;
+      width: 100%;
+      outline: none;
+      line-height: 40px;
       padding: 0px;
       float: left;
     }
-
+    .myfile {
+      border: 1px solid #ddd;
+      padding: 10px 15px;
+    }
   </style>
 
 </head>
@@ -94,14 +108,15 @@
   </div>
   <div class="row" id="opt" style="height:40px;">
     <div class="col-xs-2" style="padding:0;height:40px;line-height:40px;text-align:center;">
-      <button id="faceBtn" style="height:40px;width:33%;line-height:40px;float: left;">表情</button>
+      <button id="faceBtn" style="height:40px;width:50%;line-height:40px;float: left;">表情</button>
       <div id="uploader" class="wu-example">
         <!--用来存放文件信息-->
         <!--<div id="thelist" class="uploader-list"></div>-->
         <div class="btns">
-          <div id="picker" style="height:40px;width:33%;outline:none;line-height:40px;float: left">选择大文件</div>
-          <button id="ctlBtn" style="height:40px;width:33%;outline:none;line-height:40px;float: left;float: left"
-            >开始上传</button>
+          <div id="picker" style="height:40px;width:50%;outline:none;line-height:40px;float: left">选择大文件</div>
+          <!--<button id="ctlBtn" style="height:40px;width:33%;outline:none;line-height:40px;float: left;float: left">
+            开始上传
+          </button>-->
         </div>
       </div>
     </div>
@@ -216,7 +231,17 @@
         html += "<span class='no-read'>" + readMsg + "</span>";
         html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
         html += " </div>";
-        html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
+        if (chatMessage.msg && chatMessage.msg != "") {
+          html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
+        } else {
+          html += "<div class='myself'>";
+          html += " <div class='item'>";
+          html += "   <h4 class='info'>文件：" + chatMessage.name + "</h4>";
+          html += "   <p class='state blue'>已上传</p>";
+          html += " </div>";
+          html += "</div>";
+        }
+
         html += "</div>";
 
         $("#content").prepend(html);
@@ -266,7 +291,7 @@
   function readChatMessage(chatMessage) {
     var URL = "readChatMessage";
 
-    $.post(URL, chatMessage, function(jsonData) {
+    $.post(URL, chatMessage, function (jsonData) {
       if (!jsonData.flag) {
         alert("反馈已读失败, 请与管理员联系");
       }
@@ -280,6 +305,7 @@
     str = str.replace(/\[em_([0-9]*)\]/g, '<img src="/arclist/$1.gif" border="0" />');
     return str;
   }
+
   /*]]>*/
 </script>
 <script th:inline="javascript">
@@ -420,11 +446,16 @@
   uploader.on('fileQueued', function (file) {
     console.log("fileQueued");
 
-  /*<div id="thelist" class="uploader-list"></div>*/
-    $("#content").append('<div><div id="' + file.id + '" class="item myself">' +
-      '<h4 class="info">' + file.name + '</h4>' +
-      '<p class="state">等待上传...</p>' +
-      '</div></div>');
+    var fileInfoHtml = "";
+    fileInfoHtml += "<div class='myself'>";
+    fileInfoHtml += " <div id=" + file.id + " class='item'>";
+    fileInfoHtml += "   <h4 class='info'>文件：" + file.name + "</h4>";
+    fileInfoHtml += "   <p class='state'>等待上传...</p>";
+    fileInfoHtml += " </div>";
+    fileInfoHtml += "</div>";
+    $("#content").append(fileInfoHtml);
+
+    uploader.upload();
   });
 
   //当某个文件的分块在发送前触发，主要用来询问是否要添加附带参数，大文件在开起分片上传的前提下此事件可能会触发多次。
@@ -444,17 +475,24 @@
     if (file.pass) {
       text = "已上传"
     }
-    $('#' + file.id).find('p.state').text(text);
+    $('#' + file.id).find('p.state').addClass("blue").text(text);
+
+    var html = "";
+    html += " <div class='title'>";
+    html += "<span class='no-read'>（未读）</span>";
+    html += imUser.nick + "&nbsp;" + new Date().format("yyyy-MM-dd HH:mm:ss");
+    html += " </div>";
+
+    sendFileInfo(file.md5, file.name);
+    $('#' + file.id).prepend(html);
   });
   uploader.on('uploadError', function (file) {
     $('#' + file.id).find('p.state').text('上传出错');
   });
   uploader.on('uploadComplete', function (file) {
     // 隐藏进度条
-
     fadeOutProgress(file, 'MD5');
     fadeOutProgress(file, 'FILE');
-    sendMessage();
   });
   // 文件上传
   $btn.on('click', function () {
@@ -462,6 +500,27 @@
     uploader.upload();
     console.log("上传成功");
   });
+
+  function sendFileInfo(md5, name) {
+    var formData = {
+      "type": "0",
+      "fromUserName": imUser.userName,
+      "fromNick": imUser.nick,
+      "toUserName": toImUser.userName,
+      "toNick": toImUser.nick,
+      "sendTime": new Date(),
+      "readFlag": 0,
+      "md5": md5,
+      "name": name
+    };
+
+    var URL = "/im/singleChat";
+    $.post(URL, formData, function (jsonData) {
+      if (!jsonData.flag) {
+        alert("发送失败，请与管理员联系！");
+      }
+    }, "json");
+  }
 
   /**
    *  生成进度条封装方法
@@ -493,6 +552,7 @@
   function fadeOutProgress(file, id_Prefix) {
     $('#' + file.id).find('#' + id_Prefix + '-progress').fadeOut();
   }
+
   /*]]>*/
 </script>
 </body>
