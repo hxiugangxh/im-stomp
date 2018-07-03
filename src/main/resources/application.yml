@@ -13,6 +13,9 @@ spring:
   http:
     encoding:
       enabled: true
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 100MB
   rabbitmq:
     username: guest
     password: guest
@@ -41,3 +44,10 @@ logging:
     com.ylz.imstomp.dao.mapper: debug
 server:
   port: 8081
+
+#文件上传参数
+breakpoint:
+  upload:
+    dir: D:/data0/uploads/
+    #1024*1024=1 048 576,5M=5 242 880
+    chunkSize: 5 242 880

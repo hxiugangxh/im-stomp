@@ -85,8 +85,6 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
 
         List<ChatMessage> chatMessageList = mongoTemplate.aggregate(aggregation, ChatMessage.class).getMappedResults();
 
-        System.out.println(chatMessageList);
-
         return chatMessageList;
     }
 
@@ -122,15 +120,11 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
 
         List<ChatMessage> chatMessageList = mongoTemplate.aggregate(aggregation, ChatMessage.class).getMappedResults();
 
-        System.out.println(chatMessageList);
-
         ImUser imUser = new ImUser();
         if (CollectionUtils.isNotEmpty(chatMessageList)) {
             imUser.setUserName(chatMessageList.get(0).getFromUserName());
             imUser.setNoReadCount(chatMessageList.get(0).getNoReadCount());
         }
-
-        System.out.println("获取: " + imUser);
 
         return imUser;
     }

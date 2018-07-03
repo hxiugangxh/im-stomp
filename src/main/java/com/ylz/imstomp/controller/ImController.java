@@ -2,6 +2,7 @@ package com.ylz.imstomp.controller;
 
 import com.ylz.imstomp.bean.ChatMessage;
 import com.ylz.imstomp.bean.ImUser;
+import com.ylz.imstomp.bean.MultipartFileParam;
 import com.ylz.imstomp.bean.OnlineInfoBean;
 import com.ylz.imstomp.constant.AMQConstants;
 import com.ylz.imstomp.constant.Constants;
@@ -9,11 +10,18 @@ import com.ylz.imstomp.dao.mongodb.ImChatLogMongoJpa;
 import com.ylz.imstomp.dao.mongodb.ImChatMongoDao;
 import com.ylz.imstomp.service.ImChatLogService;
 import com.ylz.imstomp.service.ImService;
+import com.ylz.imstomp.service.StorageService;
+import com.ylz.imstomp.vo.ResultStatus;
+import com.ylz.imstomp.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.FileUtils;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
@@ -22,15 +30,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import sun.text.resources.cldr.mr.FormatData_mr;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Controller
@@ -51,6 +60,77 @@ public class ImController {
 
     @Autowired
     private ImChatLogService imChatLogService;
+
+    @RequestMapping("/webuploader")
+    public String webuploader() {
+
+        return "webuploader";
+    }
+
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private StorageService storageService;
+
+    /**
+     * 秒传判断，断点判断
+     *
+     * @return
+     */
+    @RequestMapping(value = "checkFileMd5", method = RequestMethod.POST)
+    @ResponseBody
+    public Object checkFileMd5(String md5) throws IOException {
+        Object processingObj = stringRedisTemplate.opsForHash().get(Constants.FILE_UPLOAD_STATUS, md5);
+        if (processingObj == null) {
+            return new ResultVo(ResultStatus.NO_HAVE);
+        }
+        String processingStr = processingObj.toString();
+        boolean processing = Boolean.parseBoolean(processingStr);
+        String value = stringRedisTemplate.opsForValue().get(Constants.FILE_MD5_KEY + md5);
+        if (processing) {
+            return new ResultVo(ResultStatus.IS_HAVE, value);
+        } else {
+            File confFile = new File(value);
+            byte[] completeList = FileUtils.readFileToByteArray(confFile);
+            List<String> missChunkList = new LinkedList<>();
+            for (int i = 0; i < completeList.length; i++) {
+                if (completeList[i] != Byte.MAX_VALUE) {
+                    missChunkList.add(i + "");
+                }
+            }
+            return new ResultVo<>(ResultStatus.ING_HAVE, missChunkList);
+        }
+    }
+
+    /**
+     * 上传文件
+     *
+     * @param param
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
+    @ResponseBody
+    public ResponseEntity fileUpload(MultipartFileParam param, HttpServletRequest request) {
+        boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+        if (isMultipart) {
+            log.info("上传文件start。");
+            try {
+                // 方法1
+                //storageService.uploadFileRandomAccessFile(param);
+                // 方法2 这个更快点
+                System.out.println(param);
+                storageService.uploadFileByMappedByteBuffer(param);
+            } catch (IOException e) {
+                e.printStackTrace();
+                log.error("文件上传失败。{}", param.toString());
+            }
+            log.info("上传文件end。");
+        }
+        return ResponseEntity.ok().body("上传成功。");
+    }
 
     @RequestMapping("/look")
     @ResponseBody
