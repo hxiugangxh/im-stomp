@@ -30,11 +30,11 @@
     }
 
     .red {
-      color: red;
+      color: #369DE1;
     }
 
     .gray {
-      color: #ddd;
+      color: #333;
     }
 
     li {
@@ -42,12 +42,13 @@
     }
 
     li:hover {
-      background-color: #428bca;
+      background-color: #82b1da;
+      color: #ffffff;
     }
 
     .more-info {
       position: fixed;
-      top: 50px;
+      top: 80px;
       left: 50%;
       font-size: 13px;
       cursor: pointer;
@@ -71,10 +72,14 @@
       right: 15px;
       color: red;
     }
+    .list-group-item {
+      border: none;
+      background-color: #f5f5f5;
+    }
   </style>
 
 </head>
-<body>
+<body style="background-image: url('/images/bg.png');">
 <div class="more-info">
   <div class="load" onclick="loadMoreChatMessage()">
     查看更多信息
@@ -86,7 +91,7 @@
   <input id="pageSize" type="hidden" value="15"/>
 </div>
 
-<div class="container-fluid" id="chatWin" style="width: 950px;border: 1px solid #ddd">
+<div class="container-fluid" id="chatWin" style="width: 950px;background-color: #ffffff;margin-top: 30px;margin-bottom: 30px;border-radius: 5px">
   <div class="row top" style="background-color: #369DE1;">
     <div class="col-sm-12" id="top">
       <div style="color:#fff;">
@@ -101,17 +106,18 @@
       </ul>
     </div>
     <div class="col-sm-10" style="padding: 0">
-      <div id="content" style="border: 1px solid #ddd">
+      <div id="content" style="border: 1px solid #ddd;border-radius: 5px">
 
       </div>
     </div>
   </div>
   <div class="row" id="opt" style="height:40px;">
-    <div class="col-xs-2" style="padding:0;height:40px;line-height:40px;text-align:center;">
+    <div class="col-xs-2" style="padding:0;height:40px;text-align:center;">
       <button id="faceBtn" class="btn btn-default" style="height:40px;width:100%;outline:none;">表情</button>
     </div>
     <div class="col-xs-8" style="padding:0;height:40px;line-heght:40px;">
-      <input type="text" id="msg" style="margin:0;width:100%;height:40px;outline:none;padding-left: 5px"/>
+      <input type="text" id="msg" style="margin:0;width:100%;height:40px;border: 1px solid #ddd;padding-left: 5px"
+        placeholder="请输入聊天信息。。。。。。"/>
     </div>
     <div class="col-xs-2" style="padding:0;">
       <button onclick="sendMessage()" class="btn btn-default" style="height:40px;width:100%;outline:none;">发送</button>
@@ -174,18 +180,21 @@
               if (imUserList[i].userName != imUser.userName) {
                 var noReadCount = (imUserList[i].noReadCount > 0) ? imUserList[i].noReadCount : "";
                 if (imUserList[i].online == "1") {
-                  onlineDomEle += "<li class='list-group-item " + imUserList[i].userName
+                  onlineDomEle += "<li class='list-group-item red " + imUserList[i].userName
                     + "' data-userName='" + imUserList[i].userName + "'>"
+                    + "<img src='/images/head-online.png' style='margin-right: 5px;margin-bottom: 2px'>"
                     + imUserList[i].nick + "<span class='no-read'>" + noReadCount + "</span></li>";
                 } else {
                   domEle += "<li class='list-group-item gray " + imUserList[i].userName
                     + "' data-userName='" + imUserList[i].userName + "'>"
+                    + "<img src='/images/head.png' style='margin-right: 5px;margin-bottom: 2px'>"
                     + imUserList[i].nick + "<span class='no-read'>" + noReadCount + "</span></li>";
                 }
               }
             }
 
             var itselfDomEle = "<li class='list-group-item red " + imUser.userName + "' data-userName='" + imUser.userName + "'>"
+              + "<img src='/images/head-online.png' style='margin-right: 5px;margin-bottom: 2px'>"
               + imUser.nick + "</li>";
 
             // 自己 + 在线 + 不在线

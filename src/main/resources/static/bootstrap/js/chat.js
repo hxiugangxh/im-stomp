@@ -1,7 +1,7 @@
 $(function () {
     // $("#menuModal").modal('show');
     var height = $(window).height();
-    $('#content').css("height", height - $('#top').height() - $('#opt').height() - 40);
+    $('#content').css("height", height - $('#top').height() - $('#opt').height() - 90);
     $('#onLineContent').css("height", height - $('#top').height() - $('#opt').height() - 45);
 
     $('#loginBtn').click(function(){
@@ -12,6 +12,12 @@ $(function () {
         id: 'facebox',
         assign: 'msg',
         path: '/arclist/'	//表情存放的路径
+    });
+
+    $(window).resize(function() {
+      var height = $(window).height();
+      $('#content').css("height", height - $('#top').height() - $('#opt').height() - 90);
+      $('#onLineContent').css("height", height - $('#top').height() - $('#opt').height() - 45);
     });
 });
 

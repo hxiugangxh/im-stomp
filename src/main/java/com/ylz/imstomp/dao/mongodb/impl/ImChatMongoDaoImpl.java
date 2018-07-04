@@ -76,8 +76,9 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
                         Criteria.where("toUserName").exists(true),
                         Criteria.where("readFlag").is(0)
                 )),
-                group("fromUserName")
+                group("fromUserName", "toUserName")
                         .first("fromUserName").as("fromUserName")
+                        .first("toUserName").as("toUserName")
                         .count().as("noReadCount")
         );
 

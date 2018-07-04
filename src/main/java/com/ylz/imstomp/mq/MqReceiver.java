@@ -37,7 +37,7 @@ public class MqReceiver {
             onlineUserList.add(simpUser.getName());
         }
 
-        OnlineInfoBean onlineInfoBean = imService.listOnlineUser(onlineUserList);
+        OnlineInfoBean onlineInfoBean = imService.listOnlineUser(onlineUserList, accountId);
 
         simpMessagingTemplate.convertAndSend(Constants.USER_ONLINE_INFO, onlineInfoBean);
     }

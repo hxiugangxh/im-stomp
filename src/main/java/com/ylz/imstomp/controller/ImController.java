@@ -24,7 +24,9 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.social.security.SocialUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -60,17 +62,24 @@ public class ImController {
     @Value("${breakpoint.upload.dir}")
     private String finalDirPath;
 
-    @RequestMapping("/webuploader")
-    public String webuploader() {
-
-        return "webuploader";
-    }
-
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
     private StorageService storageService;
+
+    @RequestMapping("/test")
+    @ResponseBody
+    public String test() {
+
+        return "test";
+    }
+
+    @RequestMapping("/webuploader")
+    public String webuploader() {
+
+        return "webuploader";
+    }
 
     @RequestMapping("/look")
     @ResponseBody
@@ -152,7 +161,7 @@ public class ImController {
 
     @RequestMapping("/brokerOnline")
     @ResponseBody
-    public Map<String, Object> brokerOnline() {
+    public Map<String, Object> brokerOnline(Principal principal) {
         Map<String, Object> jsonMap = new HashMap<>();
         boolean flag = true;
         try {
@@ -161,7 +170,7 @@ public class ImController {
                 onlineUserList.add(simpUser.getName());
             }
 
-            OnlineInfoBean onlineInfoBean = imService.listOnlineUser(onlineUserList);
+            OnlineInfoBean onlineInfoBean = imService.listOnlineUser(onlineUserList, principal.getName());
 
             log.info("brokerOnline--广播在线信息: {}", onlineInfoBean);
             simpMessagingTemplate.convertAndSend(Constants.USER_ONLINE_INFO, onlineInfoBean);
@@ -304,7 +313,6 @@ public class ImController {
         return ResponseEntity.ok().body("上传成功。");
     }
 
-
     @RequestMapping(value = "/download")
     public void download(
             @RequestParam("md5") String md5,
@@ -315,8 +323,6 @@ public class ImController {
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;filename="
                 + new String(name.getBytes("GB2312"),"ISO-8859-1"));
-
-        System.out.println("name = " + new String(name.getBytes("GB2312")));
 
         String filePath = finalDirPath + md5  + "\\" + name;
         InputStream inputStream = new FileInputStream(filePath);

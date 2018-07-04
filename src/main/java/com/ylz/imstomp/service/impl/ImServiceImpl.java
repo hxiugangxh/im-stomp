@@ -34,7 +34,7 @@ public class ImServiceImpl implements ImService {
     }
 
     @Override
-    public OnlineInfoBean listOnlineUser(List<String> onlineUserList) {
+    public OnlineInfoBean listOnlineUser(List<String> onlineUserList, String userName) {
 
         List<ImUser> list = imUserMapper.listOnlineUser(onlineUserList);
 
@@ -48,7 +48,8 @@ public class ImServiceImpl implements ImService {
                 userCount.getAndSet(userCount.get() + 1);
             }
             chatMessageList.forEach(chatMessage -> {
-                if (imUser.getUserName().equals(chatMessage.getFromUserName())) {
+                if (userName.equals(chatMessage.getToUserName())
+                        && imUser.getUserName().equals(chatMessage.getFromUserName())) {
                     imUser.setNoReadCount(chatMessage.getNoReadCount());
                 }
             });
