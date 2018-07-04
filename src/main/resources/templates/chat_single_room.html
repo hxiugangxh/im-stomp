@@ -106,12 +106,15 @@
   <input id="pageSize" type="hidden" value="15"/>
 </div>
 
-<div class="container-fluid" id="chatWin" style="width:900px;border: 1px solid #ddd">
+<div class="container-fluid" id="chatWin" style="width: 900px;border: 1px solid #ddd">
   <div class="row top" style="background-color: #369DE1;">
     <div class="col-sm-12" id="top">
-      <div style="color:#fff;" th:text="${toImUser.nick}"></div>
+      <div style="color:#fff;text-align: center">
+        您正在与：<span id="userCount" style="color:#fff;" th:text="${toImUser.nick}"></span>&nbsp;聊天
+      </div>
     </div>
   </div>
+
   <div class="row">
     <div class="col-sm-12" style="padding: 0px">
       <div id="content" class="uploader-list" style="padding-bottom: 30px">
@@ -121,7 +124,9 @@
   </div>
   <div class="row" id="opt" style="height:40px;">
     <div class="col-xs-2" style="padding:0;height:40px;line-height:40px;text-align:center;">
-      <button id="faceBtn" class="btn btn-default" style="vertical-align: middle;height:40px;width:50%;float: left;">表情</button>
+      <button id="faceBtn" class="btn btn-default" style="vertical-align: middle;height:40px;width:50%;float: left;">
+        表情
+      </button>
       <div id="uploader" class="wu-example">
         <!--用来存放文件信息-->
         <!--<div id="thelist" class="uploader-list"></div>-->
@@ -134,10 +139,12 @@
       </div>
     </div>
     <div class="col-xs-8" style="padding:0;height:40px;line-heght:40px;">
-      <input type="text" id="msg" style="margin:0;width:100%;height:40px;outline:none;"/>
+      <input type="text" id="msg" style="margin:0;width:100%;height:40px;outline:none;padding-left: 5px"/>
     </div>
     <div class="col-xs-2" style="padding:0;">
-      <button class="btn btn-default" onclick="sendMessage()" style="height:40px;width:100%;outline:none;vertical-align: middle;">发送</button>
+      <button class="btn btn-default" onclick="sendMessage()"
+              style="height:40px;width:100%;outline:none;vertical-align: middle;">发送
+      </button>
     </div>
   </div>
 </div>
@@ -210,6 +217,39 @@
     listChatMessage();
   }
 
+  $(document).on("click", ".chat-file", function () {
+    var url = "/im/download"
+      + "?md5=" + $(this).attr("data-md5")
+      + "&name=" + $(this).attr("data-name");
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);        // 也可以使用POST方式，根据接口
+    xhr.responseType = "blob";    // 返回类型blob
+
+    var that = this;
+    xhr.onload = function () {
+      // 请求完成
+      if (this.status === 200) {
+        // 返回200
+        var blob = this.response;
+        var reader = new FileReader();
+        reader.readAsDataURL(blob);    // 转换为base64，可以直接放入a表情href
+        reader.onload = function (e) {
+          // 转换完成，创建一个a标签用于下载
+          var a = document.createElement('a');
+          a.download = $(that).attr("data-name");
+          a.href = e.target.result;
+          $("body").append(a);    // 修复firefox中无法触发click
+          a.click();
+          $(a).remove();
+        }
+      } else {
+        alert("文件已经不存在，请重新上传");
+      }
+    };
+    // 发送ajax请求
+    xhr.send();
+  });
+
   function listChatMessage() {
     var URL = "/im/listChatMessage";
     var formData = {
@@ -251,7 +291,7 @@
         } else {
           html += "<div class='" + clazz + "'>";
           html += " <div class='item'>";
-          html += "   <div class='chat-file'>";
+          html += "   <div class='chat-file' data-md5='" + chatMessage.md5 + "' data-name='" + chatMessage.name + "'>";
           html += "     <h4 class='info'><span class='glyphicon glyphicon-file'>：</span>" + chatMessage.name + "</h4>";
           html += "     <p class='state blue'>" + fileStatus + "</p>";
           html += "   </div>";
@@ -509,6 +549,8 @@
     html += "<span class='no-read'>（未读）</span>";
     html += imUser.nick + "&nbsp;" + new Date().format("yyyy-MM-dd HH:mm:ss");
     html += " </div>";
+    $('#' + file.id).find(".chat-file").attr("data-md5", file.md5);
+    $('#' + file.id).find(".chat-file").attr("data-name", file.name);
     $('#' + file.id).prepend(html);
 
     sendFileInfo(file.md5, file.name);

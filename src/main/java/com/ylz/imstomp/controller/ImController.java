@@ -15,6 +15,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -55,6 +56,9 @@ public class ImController {
 
     @Autowired
     private ImChatLogService imChatLogService;
+
+    @Value("${breakpoint.upload.dir}")
+    private String finalDirPath;
 
     @RequestMapping("/webuploader")
     public String webuploader() {
@@ -283,7 +287,6 @@ public class ImController {
     @RequestMapping(value = "/fileUpload", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity fileUpload(MultipartFileParam param, HttpServletRequest request) {
-        System.out.println("param = " + param);
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
         if (isMultipart) {
             log.info("上传文件start。");
@@ -291,7 +294,6 @@ public class ImController {
                 // 方法1
                 //storageService.uploadFileRandomAccessFile(param);
                 // 方法2 这个更快点
-                System.out.println(param);
                 storageService.uploadFileByMappedByteBuffer(param);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -304,14 +306,19 @@ public class ImController {
 
 
     @RequestMapping(value = "/download")
-    public void download(HttpServletResponse response) throws IOException {
-        String fileName = "部署流1程.docx";
+    public void download(
+            @RequestParam("md5") String md5,
+            @RequestParam("name") String name,
+            HttpServletResponse response
+    ) throws IOException {
         response.setHeader("content-type", "application/octet-stream");
         response.setContentType("application/octet-stream");
         response.setHeader("Content-Disposition", "attachment;filename="
-                + new String(fileName.getBytes("GB2312"),"ISO-8859-1"));
+                + new String(name.getBytes("GB2312"),"ISO-8859-1"));
 
-        String filePath = "D:\\" + fileName;
+        System.out.println("name = " + new String(name.getBytes("GB2312")));
+
+        String filePath = finalDirPath + md5  + "\\" + name;
         InputStream inputStream = new FileInputStream(filePath);
 
         OutputStream outputStream = response.getOutputStream();
@@ -325,6 +332,5 @@ public class ImController {
             IOUtils.closeQuietly(outputStream);
         }
     }
-
 
 }
