@@ -13,6 +13,7 @@ import com.ylz.imstomp.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -30,8 +31,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.security.Principal;
 import java.util.*;
 
@@ -300,5 +301,30 @@ public class ImController {
         }
         return ResponseEntity.ok().body("上传成功。");
     }
+
+
+    @RequestMapping(value = "/download")
+    public void download(HttpServletResponse response) throws IOException {
+        String fileName = "部署流1程.docx";
+        response.setHeader("content-type", "application/octet-stream");
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment;filename="
+                + new String(fileName.getBytes("GB2312"),"ISO-8859-1"));
+
+        String filePath = "D:\\" + fileName;
+        InputStream inputStream = new FileInputStream(filePath);
+
+        OutputStream outputStream = response.getOutputStream();
+
+        try {
+            IOUtils.copy(inputStream, outputStream);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(outputStream);
+        }
+    }
+
 
 }
