@@ -1,0 +1,56 @@
+server:
+  port: 8083
+spring:
+  session:
+    store-type: none
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.43.33/im-stomp?useUnicode=yes&characterEncoding=UTF-8&useSSL=false
+    username: root
+    password: ylzinfo
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+  http:
+    encoding:
+      enabled: true
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 100MB
+  rabbitmq:
+    username: hxb
+    password: hxb
+    host: 192.168.44.56
+    port: 5672
+  data:
+    mongodb:
+      uri: mongodb://sso:sso@192.168.44.86:27017/sso
+  redis:
+    host: 10.102.2.34
+    password: msyos
+    port: 6379
+    sysName: ylzinfo-cloud-sysmanager-srp
+    enable: true
+    database: 6
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  config-location: classpath:config/mybatis-conf.xml
+
+imooc:
+  security:
+    browser:
+      signInResponseType: REDIRECT
+      singInSuccessUrl: /im/chatRoom
+      signInPage: /login
+logging:
+  level:
+    com.ylz.imstomp.dao.mapper: debug
+
+#文件上传参数
+breakpoint:
+  upload:
+    dir: /im-stomp/uploads/
+    #1024*1024=1 048 576,5M=5 242 880
+    chunkSize: 5 242 880

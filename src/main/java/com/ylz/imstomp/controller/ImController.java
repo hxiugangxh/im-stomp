@@ -239,7 +239,6 @@ public class ImController {
             log.info("singleChat--保存聊天记录: {}", chatMessage);
             imChatLogService.saveChatLog(chatMessage);
 
-            log.info("singleChat--发送聊天信息: {}", chatMessage);
             simpMessagingTemplate.convertAndSendToUser(chatMessage.getToUserName(),
                     Constants.SINGLE_CHAT_DES, chatMessage);
 
@@ -324,7 +323,7 @@ public class ImController {
         response.setHeader("Content-Disposition", "attachment;filename="
                 + new String(name.getBytes("GB2312"),"ISO-8859-1"));
 
-        String filePath = finalDirPath + md5  + "\\" + name;
+        String filePath = finalDirPath + md5  + "/" + name;
         InputStream inputStream = new FileInputStream(filePath);
 
         OutputStream outputStream = response.getOutputStream();

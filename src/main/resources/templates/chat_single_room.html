@@ -174,6 +174,8 @@
         stompClient.subscribe('/user/queue/notifications', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
           var chatMesssage = JSON.parse(respnose.body);
 
+          console.log(chatMesssage);
+
           showResponse(chatMesssage);
         });
 
@@ -314,7 +316,6 @@
       if ($("#pn").val() == 0) {
         $("#content").scrollTop(999999);
       } else {
-        alert("1");
         $("#content").scrollTop($("#content")[0].scrollHeight - bottom);
       }
     }, "json");
@@ -341,7 +342,18 @@
     html += "<span class='no-read'>" + readMsg + "</span>";
     html += chatMessage.fromNick + "&nbsp;" + new Date(chatMessage.sendTime).format("yyyy-MM-dd HH:mm:ss");
     html += " </div>";
-    html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
+    if (chatMessage.msg && chatMessage.msg != "") {
+      html += " <div class='item'>" + replace_em(chatMessage.msg) + "</div>";
+    } else {
+      html += "<div class='" + clazz + "'>";
+      html += " <div class='item'>";
+      html += "   <div class='chat-file' data-md5='" + chatMessage.md5 + "' data-name='" + chatMessage.name + "'>";
+      html += "     <h4 class='info'><span class='glyphicon glyphicon-file'>：</span>" + chatMessage.name + "</h4>";
+      html += "     <p class='state blue'></p>";
+      html += "   </div>";
+      html += " </div>";
+      html += "</div>";
+    }
     html += "</div>";
 
     $("#msg").val("");
@@ -589,12 +601,14 @@
       "toNick": toImUser.nick,
       "sendTime": new Date(),
       "readFlag": 0,
+      "msg": "",
       "md5": md5,
       "name": name
     };
 
     var URL = "/im/singleChat";
     $.post(URL, formData, function (jsonData) {
+
       if (!jsonData.flag) {
         alert("发送失败，请与管理员联系！");
       }
