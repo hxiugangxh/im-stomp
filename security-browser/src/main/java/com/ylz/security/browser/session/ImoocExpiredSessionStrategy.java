@@ -1,6 +1,6 @@
 package com.ylz.security.browser.session;
 
-import com.ylz.security.core.properties.SecurityProperties;
+import com.ylz.imstomp.properties.SecurityProperties;
 import org.springframework.security.web.session.SessionInformationExpiredEvent;
 import org.springframework.security.web.session.SessionInformationExpiredStrategy;
 

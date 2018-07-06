@@ -1,4 +1,4 @@
-package com.ylz.security.core.authentication;
+package com.ylz.imstomp.authentication;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

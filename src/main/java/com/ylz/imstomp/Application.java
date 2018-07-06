@@ -8,7 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan(basePackages = {"com.ylz", "com.hxg"})
+@ComponentScan(basePackages = {"com.ylz"})
 @MapperScan(basePackages = "com.ylz.**.mapper")
 @SpringBootApplication
 public class Application {

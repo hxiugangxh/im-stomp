@@ -1,8 +1,8 @@
 package com.ylz.security.browser;
 
-import com.ylz.security.core.authentication.FormAuthenticationConfig;
-import com.ylz.security.core.authorize.AuthorizeConfigManager;
-import com.ylz.security.core.properties.SecurityProperties;
+import com.ylz.imstomp.authentication.FormAuthenticationConfig;
+import com.ylz.imstomp.authorize.AuthorizeConfigManager;
+import com.ylz.imstomp.properties.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

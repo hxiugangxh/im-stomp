@@ -1,4 +1,4 @@
-package com.ylz.imstomp.config.kissoconf;
+package com.ylz.imstomp.config;
 
 import com.baomidou.kisso.web.WebKissoConfigurer;
 import com.baomidou.kisso.web.interceptor.SSOSpringInterceptor;

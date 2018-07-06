@@ -31,14 +31,8 @@
 
         <dependency>
             <groupId>com.ylzinfo</groupId>
-            <artifactId>eva-core</artifactId>
-            <version>2.0.5-SNAPSHOT</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-dataformat-xml</artifactId>
-                    <groupId>com.fasterxml.jackson.dataformat</groupId>
-                </exclusion>
-            </exclusions>
+            <artifactId>im-stomp-kisso</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
         </dependency>
 
         <dependency>

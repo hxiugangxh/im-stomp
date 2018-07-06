@@ -1,4 +1,4 @@
-package com.ylz.security.core.authentication;
+package com.ylz.imstomp.authentication;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

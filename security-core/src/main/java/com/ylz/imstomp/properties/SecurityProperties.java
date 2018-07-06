@@ -1,4 +1,4 @@
-package com.ylz.security.core.properties;
+package com.ylz.imstomp.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -14,11 +14,11 @@ public class SecurityProperties {
 	/**
 	 * 验证码配置
 	 */
-	private ValidateCodeProperties code = new ValidateCodeProperties();
+//	private ValidateCodeProperties code = new ValidateCodeProperties();
 	/**
 	 * OAuth2认证服务器配置
 	 */
-	private OAuth2Properties oauth2 = new OAuth2Properties();
+//	private OAuth2Properties oauth2 = new OAuth2Properties();
 
 }
 

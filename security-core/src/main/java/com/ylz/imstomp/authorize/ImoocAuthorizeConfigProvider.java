@@ -1,7 +1,7 @@
-package com.ylz.security.core.authorize;
+package com.ylz.imstomp.authorize;
 
-import com.ylz.security.core.properties.SecurityConstants;
-import com.ylz.security.core.properties.SecurityProperties;
+import com.ylz.imstomp.properties.SecurityConstants;
+import com.ylz.imstomp.properties.SecurityProperties;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;

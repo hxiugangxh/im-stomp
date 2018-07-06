@@ -1,6 +1,6 @@
-package com.ylz.security.core;
+package com.ylz.imstomp;
 
-import com.ylz.security.core.properties.SecurityProperties;
+import com.ylz.imstomp.properties.SecurityProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 

@@ -14,5 +14,5 @@ server:
   port: 8083
 
 # 是否开启eva kisso单点配置
-im-stomp.eva：
-  kisso: false
+im-stomp.eva:
+  kisso: true

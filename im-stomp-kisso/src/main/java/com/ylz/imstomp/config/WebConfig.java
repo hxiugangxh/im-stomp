@@ -1,4 +1,4 @@
-package com.ylz.imstomp.config.kissoconf;
+package com.ylz.imstomp.config;
 
 import com.baomidou.kisso.web.interceptor.SSOSpringInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

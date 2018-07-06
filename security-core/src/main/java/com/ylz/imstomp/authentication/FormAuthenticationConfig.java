@@ -1,6 +1,6 @@
-package com.ylz.security.core.authentication;
+package com.ylz.imstomp.authentication;
 
-import com.ylz.security.core.properties.SecurityConstants;
+import com.ylz.imstomp.properties.SecurityConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;

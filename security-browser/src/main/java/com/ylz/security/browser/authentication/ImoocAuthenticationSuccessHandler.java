@@ -1,9 +1,9 @@
 package com.ylz.security.browser.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ylz.security.core.properties.LoginResponseType;
-import com.ylz.security.core.properties.SecurityProperties;
-import com.ylz.security.core.simple.SimpleResponse;
+import com.ylz.imstomp.properties.LoginResponseType;
+import com.ylz.imstomp.properties.SecurityProperties;
+import com.ylz.imstomp.simple.SimpleResponse;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

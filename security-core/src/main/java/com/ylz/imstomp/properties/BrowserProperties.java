@@ -1,4 +1,4 @@
-package com.ylz.security.core.properties;
+package com.ylz.imstomp.properties;
 
 import lombok.Data;
 

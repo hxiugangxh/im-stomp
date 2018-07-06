@@ -3,7 +3,7 @@ package com.ylz.security.browser;
 import com.ylz.security.browser.logout.ImoocLogoutSuccessHandler;
 import com.ylz.security.browser.session.ImoocExpiredSessionStrategy;
 import com.ylz.security.browser.session.ImoocInvalidSessionStrategy;
-import com.ylz.security.core.properties.SecurityProperties;
+import com.ylz.imstomp.properties.SecurityProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;

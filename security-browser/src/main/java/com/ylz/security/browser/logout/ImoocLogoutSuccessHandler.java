@@ -1,7 +1,7 @@
 package com.ylz.security.browser.logout;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ylz.security.core.simple.SimpleResponse;
+import com.ylz.imstomp.simple.SimpleResponse;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.ylz.security.core.properties;
+package com.ylz.imstomp.properties;
 
 /**
  * 认证成功后的响应方式

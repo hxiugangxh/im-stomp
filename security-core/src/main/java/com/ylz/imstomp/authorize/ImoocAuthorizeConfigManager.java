@@ -1,4 +1,4 @@
-package com.ylz.security.core.authorize;
+package com.ylz.imstomp.authorize;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

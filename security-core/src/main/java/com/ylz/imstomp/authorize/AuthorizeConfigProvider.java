@@ -1,4 +1,4 @@
-package com.ylz.security.core.authorize;
+package com.ylz.imstomp.authorize;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;

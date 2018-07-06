@@ -1,9 +1,8 @@
 package com.ylz.security.browser;
 
-import com.ylz.security.core.properties.SecurityConstants;
-import com.ylz.security.core.properties.SecurityProperties;
-import com.ylz.security.core.simple.SimpleResponse;
-import org.apache.commons.lang.StringUtils;
+import com.ylz.imstomp.properties.SecurityConstants;
+import com.ylz.imstomp.properties.SecurityProperties;
+import com.ylz.imstomp.simple.SimpleResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

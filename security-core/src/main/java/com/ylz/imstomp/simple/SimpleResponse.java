@@ -1,4 +1,4 @@
-package com.ylz.security.core.simple;
+package com.ylz.imstomp.simple;
 
 /**
  * 简单响应的封装类
