@@ -13,6 +13,6 @@ sso.defined.private_key: MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJI6uMq
 server:
   port: 8083
 
-# 是否开启eva kisso单点配置
+# 是否开启eva kisso单点配置  为true则开启，其他都是关闭
 im-stomp.eva:
-  kisso: true
+  kisso: false

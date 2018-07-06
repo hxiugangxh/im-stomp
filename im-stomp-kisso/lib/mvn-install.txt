@@ -1,0 +1,5 @@
+mvn install:install-file -DgroupId=com.ylzinfo -DartifactId=eva-kisso -Dversion=2.0.5 -Dpackaging=jar -Dfile=eva-kisso-2.0.5-SNAPSHOT.jar
+
+mvn install:install-file -DgroupId=com.ylzinfo -DartifactId=eva-portal-api -Dversion=3.0.3 -Dpackaging=jar -Dfile=eva-portal-api-3.0.3-RELEASE.jar
+
+mvn install:install-file -DgroupId=com.ylzinfo -DartifactId=eva-portal-ssoClient -Dversion=3.0.3 -Dpackaging=jar -Dfile=eva-portal-ssoClient-3.0.3-RELEASE.jar

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.ylzinfo</groupId>
+	<artifactId>im-stomp-kisso</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>eva-kisso</name>
+
+	<dependencies>
+		<!--私服<url>http://192.168.22.97:8081/nexus/content/groups/public/</url>-->
+		<dependency>
+			<groupId>com.ylzinfo</groupId>
+			<artifactId>eva-core</artifactId>
+			<version>2.0.5-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<artifactId>jackson-dataformat-xml</artifactId>
+					<groupId>com.fasterxml.jackson.dataformat</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!--下面的包在lib中-->
+		<dependency>
+			<groupId>com.ylzinfo</groupId>
+			<artifactId>eva-kisso</artifactId>
+			<version>2.0.5</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.ylzinfo</groupId>
+			<artifactId>eva-portal-api</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.ylzinfo</groupId>
+			<artifactId>eva-portal-ssoClient</artifactId>
+			<version>3.0.3</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-autoconfigure</artifactId>
+			<version>2.0.2.RELEASE</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.7.0</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+					<encoding>UTF-8</encoding>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>
