@@ -42,8 +42,6 @@ imooc:
 logging:
   level:
     com.ylz.imstomp.dao.mapper: debug
-server:
-  port: 8081
 
 #文件上传参数
 breakpoint:

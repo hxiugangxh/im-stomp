@@ -1,3 +1,18 @@
 spring:
   profiles:
     active: local
+
+# 单点信息配置，全部可无
+kisso:
+  config:
+    signkey: h2wmABdfM7i3K801my   # 对称签名密钥
+    cookieName: token-uid             # COOKIE 名称
+
+sso.defined.private_key: MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAJI6uMqdPYAMgYXsiCxLBJ86QPGDTJSSyCzBseI8YBbdiZICTG7iurVAH3yLksbmqN13XdkqMBgzvAFf/FSVJ6yh+NdUjaDyz63yIk2DEfyvc/vZtZ7CrbTYGXVF07oE7l6ocVPgMe+9BqKEl+6pKJfcBqDcrL3HZz7ppbABlv6/AgMBAAECgYAmfA3mRTvKV4A/HuE3xwaQYWR2K3gcIgVMwi1uvTUMz4FFTBWRmVpKGXYv8QvQDSSkJKYuYUwHEpaIRhrCp/6oqeA60cs40YM3bmlfUcAJnm2xOHtJe7YtYLuw/0pVfJ/pP2g43WFRWsZqNmK1y0tr1zGczmTMHwRVsrDB/zNlAQJBANp2SldtmG4NLNdPBI0xEby20teA+kkrhe1/4EyBr/n6QYP4oLKqAhLLbz3ft6MUArp8MUOBmqNyZ6lb4D4ESW0CQQCrWw9VYHguYIf3qrXMF5stwxoxg+453qoQdiwVaXqA5kDGK99D8KyngPHHtxWRst+o8LqkEZI5Fce1+yMecllbAkEAwD3N56eqtlVju0huoeynRiC/4yI9nXvuS/P2pnyNJfYiBwcYKoDOeEmK57DhwWEPkZlOJLB9Kw22yOLvrsNI9QJAfZIbaHtrVsESoqIM22UpKJ3i4gpGV04e3jVbFM3ZIgCZ0x9vW4BRZeaOR8aZHc4xLMJMY9MkjoSxd2B0Wel+JQJADxteKaSUKd8sdB1nMHeK7i9BqiyEXCfjk4db3QmLuxzgzou4JrnNhad5dAGjwOdbHYMJgWpMZ1e1fOhy3Szxww==
+
+server:
+  port: 8083
+
+# 是否开启eva kisso单点配置
+im-stomp.eva：
+  kisso: false
