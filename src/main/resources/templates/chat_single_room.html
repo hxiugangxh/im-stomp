@@ -212,7 +212,7 @@
       "readFlag": 0
     };
     $.post(URL, formData, function (jsonData) {
-      showResponse(formData);
+      // showResponse(formData);
       if (!jsonData.flag) {
         alert("发送失败，请与管理员联系！");
       }
@@ -564,14 +564,16 @@
     }
     $('#' + file.id).find('p.state').addClass("blue").text(text);
 
-    var html = "";
-    html += " <div class='title'>";
-    html += "<span class='no-read'>（未读）</span>";
-    html += imUser.nick + "&nbsp;" + new Date().format("yyyy-MM-dd HH:mm:ss");
-    html += " </div>";
-    $('#' + file.id).find(".chat-file").attr("data-md5", file.md5);
-    $('#' + file.id).find(".chat-file").attr("data-name", file.name);
-    $('#' + file.id).prepend(html);
+   //  var html = "";
+   //  html += " <div class='title'>";
+   //  html += "<span class='no-read'>（未读）</span>";
+   //  html += imUser.nick + "&nbsp;" + new Date().format("yyyy-MM-dd HH:mm:ss");
+   //  html += " </div>";
+   //  $('#' + file.id).find(".chat-file").attr("data-md5", file.md5);
+   //  $('#' + file.id).find(".chat-file").attr("data-name", file.name);
+   // $('#' + file.id).prepend(html);
+
+    $('#' + file.id).parent().remove();
 
     sendFileInfo(file.md5, file.name);
 
