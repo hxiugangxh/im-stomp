@@ -328,8 +328,10 @@
 
     var readMsg = "";
     var clazz = "other";
+    var fileStatus = "";
     if (chatMessage.fromUserName == imUser.userName) {
       clazz = "myself";
+      fileStatus = "已上传";
 
       if (chatMessage.readFlag == 0) {
         readMsg = "（未读）";
@@ -349,7 +351,7 @@
       html += " <div class='item'>";
       html += "   <div class='chat-file' data-md5='" + chatMessage.md5 + "' data-name='" + chatMessage.name + "'>";
       html += "     <h4 class='info'><span class='glyphicon glyphicon-file'>：</span>" + chatMessage.name + "</h4>";
-      html += "     <p class='state blue'></p>";
+      html += "     <p class='state blue'>" + fileStatus + "</p>";
       html += "   </div>";
       html += " </div>";
       html += "</div>";
