@@ -69,35 +69,9 @@ public class ImController {
     private StorageService storageService;
 
     @RequestMapping("/test")
-    @ResponseBody
     public String test() {
 
         return "test";
-    }
-
-    @RequestMapping("/webuploader")
-    public String webuploader() {
-
-        return "webuploader";
-    }
-
-    @RequestMapping("/look")
-    @ResponseBody
-    public String look() {
-
-        Cache cache = cacheManager.getCache("websocket_account");
-
-        System.out.println("admin = " + cache.get("websocket_accountadmin", String.class));
-        System.out.println("abel = " + cache.get("websocket_accountabel", String.class));
-
-        return "test";
-    }
-
-    @RequestMapping("/me")
-    @ResponseBody
-    public Object me(Authentication authentication) {
-
-        return authentication;
     }
 
     @RequestMapping("/chatRoom")
@@ -207,6 +181,26 @@ public class ImController {
         return jsonMap;
     }
 
+    @RequestMapping("/chatSingleRoomTest")
+    public String chatSingleRoomTest(
+            @RequestParam(value = "toUserName") String toUserName,
+            Map<String, Object> map,
+            Principal principal) {
+
+        ImUser imUser = new ImUser();
+        imUser.setUserName(principal.getName());
+        imUser.setNick(imService.getNick(principal.getName()));
+
+        ImUser toImUser = new ImUser();
+        toImUser.setUserName(toUserName);
+        toImUser.setNick(imService.getNick(toUserName));
+
+        map.put("imUser", imUser);
+        map.put("toImUser", toImUser);
+
+        return "chat_single_room_test";
+    }
+
     @RequestMapping("/chatSingleRoom")
     public String chatSingleRoom(
             @RequestParam(value = "toUserName") String toUserName,
@@ -240,6 +234,9 @@ public class ImController {
             imChatLogService.saveChatLog(chatMessage);
 
             simpMessagingTemplate.convertAndSendToUser(chatMessage.getToUserName(),
+                    Constants.SINGLE_CHAT_DES, chatMessage);
+
+            simpMessagingTemplate.convertAndSendToUser(chatMessage.getFromUserName(),
                     Constants.SINGLE_CHAT_DES, chatMessage);
 
             ImUser imUser = imService.getImUserCount(chatMessage.getFromUserName(), chatMessage.getToUserName());
