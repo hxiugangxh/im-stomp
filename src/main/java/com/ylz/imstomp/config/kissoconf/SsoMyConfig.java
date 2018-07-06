@@ -9,8 +9,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 @Configuration
-@ConditionalOnProperty(prefix = "im-stomp.eva", name = "kisso", havingValue =
-        "connect")
+@ConditionalOnProperty(prefix = "im-stomp.eva", name = "kisso", havingValue = "true")
 public class SsoMyConfig extends WebMvcConfigurerAdapter {
     /**
      * 自定义拦截器

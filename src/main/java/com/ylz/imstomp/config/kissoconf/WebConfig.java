@@ -16,8 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
  */
 @ControllerAdvice
 @Configuration
-@ConditionalOnProperty(prefix = "im-stomp.eva", name = "kisso", havingValue =
-        "connect")
+@ConditionalOnProperty(prefix = "im-stomp.eva", name = "kisso", havingValue = "true")
 public class WebConfig extends WebMvcConfigurerAdapter {
 
     @Override
