@@ -91,7 +91,8 @@ public class ImController {
 
         if (type == 0) {
             imService.readChatMessage(fromUserName, toUserName);
-            log.info("发送已读fromUserName = {}", fromUserName);
+            // 再次广播我已经阅读了信息
+            this.brokerOnline();
             simpMessagingTemplate.convertAndSendToUser(toUserName,
                     Constants.SINGLE_CHAT_READ_DES, "read");
         }

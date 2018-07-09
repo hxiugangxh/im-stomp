@@ -184,8 +184,6 @@
         stompClient.subscribe('/user/queue/notifications', function (respnose) { //订阅/topic/getResponse 目标发送的消息。这个是在控制器的@SendTo中定义的。
           var chatMesssage = JSON.parse(respnose.body);
 
-          console.log(chatMesssage);
-
           showResponse(chatMesssage);
         });
 
@@ -379,11 +377,6 @@
       readChatMessage(chatMessage);
     }
   }
-
-  $("#content").bind('DOMNodeChanged', function(e) {
-    alert(1);
-  });
-
 
   function readChatMessage(chatMessage) {
     var URL = "readChatMessage";

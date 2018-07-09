@@ -247,7 +247,6 @@
             // 自己 + 在线 + 不在线
             $("#imUserList").html(itselfDomEle + onlineDomEle + domEle);
 
-
             $("li").each(function() {
               if ($(this).attr("data-userName") == selUserName) {
                 $(this).addClass("li-sel");
@@ -264,8 +263,8 @@
       }
     );
 
-    // 5s若网络抖动则在检测一次
-    setTimeout(brokerOnline, 5000);
+    // 3s若网络抖动则在检测一次
+    setTimeout(brokerOnline, 3000);
     // 加载历史聊天记录
     listChatMessage();
   });
