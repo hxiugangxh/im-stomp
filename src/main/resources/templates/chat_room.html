@@ -225,7 +225,7 @@
             var domEle = "";
             for (var i = 0; i < imUserList.length; i++) {
               if (imUserList[i].userName != imUser.userName) {
-                var noReadCount = (imUserList[i].noReadCount > 0) ? imUserList[i].noReadCount : "";
+                var noReadCount = (onlineInfoBean.map[imUser.userName][imUserList[i].userName] > 0) ? onlineInfoBean.map[imUser.userName][imUserList[i].userName] : "";
                 if (imUserList[i].online == "1") {
                   onlineDomEle += "<li class='list-group-item red " + imUserList[i].userName
                     + "' data-userName='" + imUserList[i].userName + "'>"
@@ -298,6 +298,8 @@
       $("#sendMessage", $("#iframe")[0].contentDocument).click();
 
       $("#msg").val("");
+
+      return ;
     }
 
     var URL = "/im/groupChat";

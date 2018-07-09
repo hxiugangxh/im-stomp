@@ -127,7 +127,7 @@ public class ImController {
 
     @RequestMapping("/brokerOnline")
     @ResponseBody
-    public Map<String, Object> brokerOnline(Principal principal) {
+    public Map<String, Object> brokerOnline() {
         Map<String, Object> jsonMap = new HashMap<>();
         boolean flag = true;
         try {
@@ -136,7 +136,7 @@ public class ImController {
                 onlineUserList.add(simpUser.getName());
             }
 
-            OnlineInfoBean onlineInfoBean = imService.listOnlineUser(onlineUserList, principal.getName());
+            OnlineInfoBean onlineInfoBean = imService.listOnlineUser(onlineUserList);
 
             log.info("brokerOnline--广播在线信息: {}", onlineInfoBean);
             simpMessagingTemplate.convertAndSend(Constants.USER_ONLINE_INFO, onlineInfoBean);

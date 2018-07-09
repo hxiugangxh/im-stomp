@@ -10,7 +10,7 @@ import java.util.List;
 public interface ImService {
     String getNick(String userName);
 
-    OnlineInfoBean listOnlineUser(List<String> onlineUserList, String userName);
+    OnlineInfoBean listOnlineUser(List<String> onlineUserList);
 
     Page<ChatMessage> listChatMessage(Integer type, String userName, String toUserName, Integer pn, Integer pageSize);
 

@@ -6,7 +6,7 @@
 	<groupId>com.ylzinfo</groupId>
 	<artifactId>im-stomp-kisso</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>pom</packaging>
+	<packaging>jar</packaging>
 
 	<name>eva-kisso</name>
 
