@@ -9,6 +9,7 @@ import com.ylz.imstomp.service.ImService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,8 +65,8 @@ public class ImServiceImpl implements ImService {
     }
 
     @Override
-    public List<ChatMessage> listChatMessage(Integer type, String fromUserName, String toUserName, Integer pn,
-                                             Integer pageSize) {
+    public Page<ChatMessage> listChatMessage(Integer type, String fromUserName, String toUserName, Integer pn,
+                                Integer pageSize) {
 
         return imChatMongoDao.listChatMessage(type, fromUserName, toUserName, pn, pageSize);
     }

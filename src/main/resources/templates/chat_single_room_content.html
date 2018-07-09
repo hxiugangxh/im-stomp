@@ -52,8 +52,8 @@
 
     .more-info {
       position: fixed;
-      top: 80px;
-      left: 45%;
+      top: 5px;
+      left: 40%;
       font-size: 13px;
       cursor: pointer;
       z-index: 99999;
@@ -100,7 +100,7 @@
   </style>
 
 </head>
-<body style="background-image: url('/images/bg.png');">
+<body>
 <div class="more-info">
   <div class="load" onclick="loadMoreChatMessage()">
     查看更多信息
@@ -112,8 +112,8 @@
   <input id="pageSize" type="hidden" value="15"/>
 </div>
 
-<div class="container-fluid" id="chatWin" style="width: 950px;background-color: #ffffff;margin-top: 30px;margin-bottom: 30px;border-radius: 5px">
-  <div class="row top" style="background-color: #369DE1;">
+<div class="container-fluid" id="chatWin" style="background-color: #ffffff;">
+  <div class="row top" style="background-color: #369DE1;display: none">
     <div class="col-sm-12" id="top">
       <div style="color:#fff;text-align: center">
         您正在与：<span id="userCount" style="color:#fff;" th:text="${toImUser.nick}"></span>&nbsp;聊天
@@ -123,12 +123,12 @@
 
   <div class="row">
     <div class="col-sm-12" style="padding: 0px">
-      <div id="content" class="uploader-list" style="padding-bottom: 30px">
+      <div id="content" class="uploader-list">
 
       </div>
     </div>
   </div>
-  <div class="row" id="opt" style="height:40px;">
+  <div class="row" id="opt" style="height:40px;display: none">
     <div class="col-xs-2" style="padding:0;height:40px;line-height:40px;text-align:center;">
       <button id="faceBtn" class="btn btn-default" style="vertical-align: middle;height:40px;width:50%;float: left;">
         表情
@@ -146,10 +146,10 @@
     </div>
     <div class="col-xs-8" style="padding:0;height:40px;line-heght:40px;">
       <input type="text" id="msg" style="margin:0;width:100%;height:40px;border: 1px solid #ddd;border-radius: 5px;padding-left: 5px"
-        placeholder="请输入聊天信息。。。。。。"/>
+             placeholder="请输入聊天信息。。。。。。"/>
     </div>
     <div class="col-xs-2" style="padding:0;">
-      <button class="btn btn-default" onclick="sendMessage()"
+      <button class="btn btn-default" onclick="sendMessage()" id="sendMessage"
               style="height:40px;width:100%;outline:none;vertical-align: middle;">发送
       </button>
     </div>
@@ -159,8 +159,18 @@
 <script th:src="@{/bootstrap/js/jquery-1.12.3.min.js}"></script>
 <script th:src="@{/bootstrap/js/bootstrap.min.js}"></script>
 <script type="text/javascript" th:src="@{/bootstrap/js/jquery.qqFace.js}"></script>
-<script type="text/javascript" th:src="@{/bootstrap/js/chat.js}"></script>
 <script type="text/javascript" th:src="@{/webuploader/js/webuploader.min.js}"></script>
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  jQuery(function() {
+    $(".more-info", window.parent.document).hide();
+    $("#content", window.parent.document).hide();
+    $("#iframe", window.parent.document).show();
+
+    $("html").height($(window.parent).height() -$('#top', window.parent.document).height() - $('#opt', window.parent.document).height() - 90);
+  });
+  /*]]>*/
+</script>
 <script th:inline="javascript">
   /*<![CDATA[*/
   //链接endpoint名称为 "/endpointChat" 的endpoint。
@@ -276,7 +286,7 @@
         $(".unload").show();
       }
 
-      var bottom = $("#content")[0].scrollHeight - $("#content").scrollTop();
+      var bottom = $("#content")[0].scrollHeight - $("html").scrollTop();
       for (var i = 0; i < chatMessageList.length; i++) {
         var clazz = "other";
         var readMsg = "";
@@ -315,10 +325,12 @@
       }
 
       if ($("#pn").val() == 0) {
-        $("#content").scrollTop(999999);
+        $("html").scrollTop(999999);
       } else {
-        $("#content").scrollTop($("#content")[0].scrollHeight - bottom);
+        $("html").scrollTop($("#content")[0].scrollHeight - bottom);
       }
+
+      $("html").scrollTop(999999999);
     }, "json");
   }
 
@@ -361,12 +373,17 @@
 
     $("#msg").val("");
     $("#content").append(html);
-    $("#content").scrollTop(9999999999);
+    $("html").scrollTop(9999999999);
 
     if (chatMessage.readFlag == 0 && chatMessage.fromUserName != imUser.userName) {
       readChatMessage(chatMessage);
     }
   }
+
+  $("#content").bind('DOMNodeChanged', function(e) {
+    alert(1);
+  });
+
 
   function readChatMessage(chatMessage) {
     var URL = "readChatMessage";
@@ -498,8 +515,7 @@
   var uploader = WebUploader.create({
     pick: {
       id: '#picker',
-      label: '选择文件',
-      class: 'btn btn-default'
+      label: '选择文件'
     },
     duplicate: true,
     formData: {
@@ -567,20 +583,20 @@
     }
     $('#' + file.id).find('p.state').addClass("blue").text(text);
 
-   //  var html = "";
-   //  html += " <div class='title'>";
-   //  html += "<span class='no-read'>（未读）</span>";
-   //  html += imUser.nick + "&nbsp;" + new Date().format("yyyy-MM-dd HH:mm:ss");
-   //  html += " </div>";
-   //  $('#' + file.id).find(".chat-file").attr("data-md5", file.md5);
-   //  $('#' + file.id).find(".chat-file").attr("data-name", file.name);
-   // $('#' + file.id).prepend(html);
+    //  var html = "";
+    //  html += " <div class='title'>";
+    //  html += "<span class='no-read'>（未读）</span>";
+    //  html += imUser.nick + "&nbsp;" + new Date().format("yyyy-MM-dd HH:mm:ss");
+    //  html += " </div>";
+    //  $('#' + file.id).find(".chat-file").attr("data-md5", file.md5);
+    //  $('#' + file.id).find(".chat-file").attr("data-name", file.name);
+    // $('#' + file.id).prepend(html);
 
     $('#' + file.id).parent().remove();
 
     sendFileInfo(file.md5, file.name);
 
-    $("#content").scrollTop(999999);
+    $("html").scrollTop(999999);
   });
   uploader.on('uploadError', function (file) {
     $('#' + file.id).find('p.state').text('上传出错');
@@ -637,7 +653,7 @@
         '</div>'
       ).appendTo($li).find('#' + id_Prefix + '-progress-bar');
 
-      $("#content").scrollTop(999999);
+      $("html").scrollTop(999999);
     }
     var progressPercentage = percentage * 100 + '%';
     $percent.css('width', progressPercentage);

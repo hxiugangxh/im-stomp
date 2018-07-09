@@ -8,14 +8,11 @@ import com.ylz.imstomp.util.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.TypedAggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -37,14 +34,14 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
     private ImChatLogMongoJpa imChatLogMongoJpa;
 
     @Override
-    public List<ChatMessage> listChatMessage(Integer type, String fromUserName, String toUserName, Integer pn,
-                                             Integer pageSize) {
+    public Page<ChatMessage> listChatMessage(Integer type, String fromUserName, String toUserName, Integer pn,
+                                Integer pageSize) {
 
         Sort sort = new Sort(DESC, "sendTime");
         Pageable pageable = new PageRequest(pn, pageSize, sort);
 
         if (type == 1) {
-            return imChatLogMongoJpa.findChatMessagesByType(type, pageable).getContent();
+            return new PageImpl(imChatLogMongoJpa.findChatMessagesByType(type, pageable).getContent());
         }
 
         Query query = new Query(
@@ -61,9 +58,12 @@ public class ImChatMongoDaoImpl implements ImChatMongoDao {
         paramMap.put("toUserName", toUserName);
         paramMap.put("pn", pn);
         paramMap.put("pageSize", pageSize);
+
         log.info("listChatMessage--从mongodb获取聊天记录:\n{},\n参数: {}", JSONUtil.format(query.toString()), paramMap);
 
-        return mongoTemplate.find(query, ChatMessage.class);
+        List<ChatMessage> chatMessages = mongoTemplate.find(query, ChatMessage.class);
+
+        return new PageImpl(chatMessages);
     }
 
     @Override

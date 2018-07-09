@@ -19,6 +19,8 @@
   <script th:src="@{/stomp.min.js}"></script>
   <script th:src="@{/jquery.js}"></script>
 
+  <link rel="stylesheet" type="text/css" th:href="@{/webuploader/css/webuploader.css}"/>
+
   <style>
     .myself {
       text-align: right;
@@ -39,9 +41,15 @@
 
     li {
       cursor: pointer;
+      background-color: #f5f5f5;
     }
 
     li:hover {
+      background-color: #82b1da;
+      color: #ffffff;
+    }
+
+    .li-sel {
       background-color: #82b1da;
       color: #ffffff;
     }
@@ -72,9 +80,9 @@
       right: 15px;
       color: red;
     }
+
     .list-group-item {
       border: none;
-      background-color: #f5f5f5;
     }
   </style>
 
@@ -91,33 +99,48 @@
   <input id="pageSize" type="hidden" value="15"/>
 </div>
 
-<div class="container-fluid" id="chatWin" style="width: 950px;background-color: #ffffff;margin-top: 30px;margin-bottom: 30px;border-radius: 5px">
+<div class="container-fluid" id="chatWin"
+     style="width: 950px;background-color: #ffffff;margin-top: 30px;margin-bottom: 30px;border-radius: 5px">
   <div class="row top" style="background-color: #369DE1;">
     <div class="col-sm-12" id="top">
-      <div style="color:#fff;">
+      <div style="color:#fff;display: inline">
         在线人数：<span id="userCount" style="color:#fff;">0</span> 人
+      </div>
+      <div style="color:#fff;display: inline;margin-left: 35%;font-size: 14px" id="topTitle">
+        欢迎来到综合管理平台大厅~~~
       </div>
     </div>
   </div>
   <div class="row">
     <div class="col-sm-2" style="padding: 0">
-      <ul class="list-group ul-top" id="imUserList" style="overflow: auto;margin: 0">
+      <ul class="list-group ul-top" id="imUserList" style="overflow: auto;margin: 0;">
         <!--<li class="list-group-item">123</li>-->
       </ul>
     </div>
-    <div class="col-sm-10" style="padding: 0">
-      <div id="content" style="border: 1px solid #ddd;border-radius: 5px">
+    <div class="col-sm-10" style="padding: 0;border: 1px solid #ddd;border-radius: 5px;">
+      <iframe id="iframe" style="width: 100%;height: 100%;display: none" frameborder="0"></iframe>
+      <div id="content" style="border: 1px solid #ddd;border-radius: 5px;">
 
       </div>
     </div>
   </div>
   <div class="row" id="opt" style="height:40px;">
-    <div class="col-xs-2" style="padding:0;height:40px;text-align:center;">
-      <button id="faceBtn" class="btn btn-default" style="height:40px;width:100%;outline:none;">表情</button>
+    <div class="col-xs-2" style="padding:0;height:40px;line-height:40px;text-align:center;">
+      <button id="faceBtn" class="btn btn-default" style="vertical-align: middle;height:40px;width: 100%;float: left;">
+        表情
+      </button>
+      <div id="uploader" class="wu-example">
+        <!--用来存放文件信息-->
+        <!--<div id="thelist" class="uploader-list"></div>-->
+        <div class="btns">
+          <div id="picker" class="btn btn-default" style="display:none;height:40px;width:50%;line-height:25px;float: left;font-size: 13px"
+            onclick="sendFile()">选择文件</div>
+        </div>
+      </div>
     </div>
     <div class="col-xs-8" style="padding:0;height:40px;line-heght:40px;">
       <input type="text" id="msg" style="margin:0;width:100%;height:40px;border: 1px solid #ddd;padding-left: 5px"
-        placeholder="请输入聊天信息。。。。。。"/>
+             placeholder="请输入聊天信息。。。。。。"/>
     </div>
     <div class="col-xs-2" style="padding:0;">
       <button onclick="sendMessage()" class="btn btn-default" style="height:40px;width:100%;outline:none;">发送</button>
@@ -131,22 +154,46 @@
 <script type="text/javascript" th:src="@{/bootstrap/js/chat.js}"></script>
 <script th:inline="javascript">
   /*<![CDATA[*/
+  var imUser = [[${imUser}]];
+  var selUserName = imUser.userName;
   $(document).on("click", "li", function () {
     var userName = $(this).attr("data-userName");
     if (userName != imUser.userName) {
-      var URL = "/im/chatSingleRoom"
+      var URL = "/im/chatSingleRoomContent"
         + "?toUserName=" + userName;
       // 默认打开就为已读
       $(this).find(".no-read").html("");
-      window.open(URL);
+      $("#iframe").attr("src", URL);
+
+      $("#topTitle").html("您正在与: <span style='font-weight: bold;font-size: 14px'>" + $(this).text() + "</span>&nbsp;聊天")
+
+      $("#faceBtn").css("width", "50%");
+      $("#picker").show();
+    } else {
+      $("#iframe").hide();
+      // 隐藏触发在子级页面
+      $(".more-info").show();
+      $("#content").show();
+      $("#iframe").attr("src", "");
+
+      $("#topTitle").html("欢迎来到综合管理平台大厅~~~");
+      $("#faceBtn").css("width", "100%");
+      $("#picker").hide();
     }
+
+    $("li").removeClass("li-sel");
+    $(this).addClass("li-sel");
+
+    selUserName = $(this).attr("data-userName");
   });
+  function sendFile() {
+    $("input[type=file]", $("#iframe")[0].contentDocument).click();
+  }
   /*]]>*/
 </script>
 <script th:inline="javascript">
   /*<![CDATA[*/
   //链接endpoint名称为 "/endpointChat" 的endpoint。
-  var imUser = [[${imUser}]];
   jQuery(function () {
     var socket = new SockJS('/endpointWisely'); //链接SockJS 的endpoint 名称为"/endpointWisely"
     stompClient = Stomp.over(socket);//使用stomp子协议的WebSocket 客户端
@@ -199,6 +246,13 @@
 
             // 自己 + 在线 + 不在线
             $("#imUserList").html(itselfDomEle + onlineDomEle + domEle);
+
+
+            $("li").each(function() {
+              if ($(this).attr("data-userName") == selUserName) {
+                $(this).addClass("li-sel");
+              }
+            });
           }
         });
 
@@ -237,6 +291,15 @@
     if (msg == "") {
       return;
     }
+
+    if ($("#iframe").attr("src") && $("#iframe").attr("src") != "") {
+      $("#msg", $("#iframe")[0].contentDocument).val(msg);
+
+      $("#sendMessage", $("#iframe")[0].contentDocument).click();
+
+      $("#msg").val("");
+    }
+
     var URL = "/im/groupChat";
     var formData = {
       "type": "1",
@@ -267,8 +330,9 @@
       "pageSize": $("#pageSize").val()
     };
 
-    $.post(URL, formData, function (chatMessageList) {
-      if (chatMessageList.length == 0) {
+    $.post(URL, formData, function (page) {
+      var chatMessageList = page.content;
+      if (chatMessageList.length == 0 || (page.totalPages - 1) <= $("#pn").val()) {
         $(".load").hide();
         $(".unload").show();
       }

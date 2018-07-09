@@ -16,17 +16,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.social.security.SocialUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -68,12 +66,6 @@ public class ImController {
     @Autowired
     private StorageService storageService;
 
-    @RequestMapping("/test")
-    public String test() {
-
-        return "test";
-    }
-
     @RequestMapping("/chatRoom")
     public String chatRoom(Map<String, Object> map, Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -90,7 +82,7 @@ public class ImController {
 
     @RequestMapping("/listChatMessage")
     @ResponseBody
-    public List<ChatMessage> listChatMessage(
+    public Page<ChatMessage> listChatMessage(
             @RequestParam("type") Integer type,
             @RequestParam(value = "fromUserName", required = false) String fromUserName,
             @RequestParam(value = "toUserName", required = false) String toUserName,
@@ -181,8 +173,8 @@ public class ImController {
         return jsonMap;
     }
 
-    @RequestMapping("/chatSingleRoomTest")
-    public String chatSingleRoomTest(
+    @RequestMapping("/chatSingleRoomContent")
+    public String chatSingleRoomContent(
             @RequestParam(value = "toUserName") String toUserName,
             Map<String, Object> map,
             Principal principal) {
@@ -198,7 +190,7 @@ public class ImController {
         map.put("imUser", imUser);
         map.put("toImUser", toImUser);
 
-        return "chat_single_room_test";
+        return "chat_single_room_content";
     }
 
     @RequestMapping("/chatSingleRoom")
