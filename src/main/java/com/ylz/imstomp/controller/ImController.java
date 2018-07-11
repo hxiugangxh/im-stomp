@@ -302,6 +302,22 @@ public class ImController {
         return ResponseEntity.ok().body("上传成功。");
     }
 
+    @RequestMapping(value = "/fileExist")
+    @ResponseBody
+    public Map<String, Object> fileExist(
+            @RequestParam("md5") String md5,
+            @RequestParam("name") String name,
+            HttpServletResponse response
+    ) {
+
+        Map<String, Object> jsonMap = new HashMap<>();
+        String filePath = finalDirPath + md5  + "/" + name;
+        File file = new File(filePath);
+        jsonMap.put("flag", file.exists());
+
+        return jsonMap;
+    }
+
     @RequestMapping(value = "/download")
     public void download(
             @RequestParam("md5") String md5,

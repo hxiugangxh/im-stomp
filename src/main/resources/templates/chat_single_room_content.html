@@ -145,7 +145,8 @@
       </div>
     </div>
     <div class="col-xs-8" style="padding:0;height:40px;line-heght:40px;">
-      <input type="text" id="msg" style="margin:0;width:100%;height:40px;border: 1px solid #ddd;border-radius: 5px;padding-left: 5px"
+      <input type="text" id="msg"
+             style="margin:0;width:100%;height:40px;border: 1px solid #ddd;border-radius: 5px;padding-left: 5px"
              placeholder="请输入聊天信息。。。。。。"/>
     </div>
     <div class="col-xs-2" style="padding:0;">
@@ -162,12 +163,12 @@
 <script type="text/javascript" th:src="@{/webuploader/js/webuploader.min.js}"></script>
 <script th:inline="javascript">
   /*<![CDATA[*/
-  jQuery(function() {
+  jQuery(function () {
     $(".more-info", window.parent.document).hide();
     $("#content", window.parent.document).hide();
     $("#iframe", window.parent.document).show();
 
-    $("html").height($(window.parent).height() -$('#top', window.parent.document).height() - $('#opt', window.parent.document).height() - 90);
+    $("html").height($(window.parent).height() - $('#top', window.parent.document).height() - $('#opt', window.parent.document).height() - 90);
   });
   /*]]>*/
 </script>
@@ -235,36 +236,55 @@
   }
 
   $(document).on("click", ".chat-file", function () {
-    var url = "/im/download"
-      + "?md5=" + $(this).attr("data-md5")
-      + "&name=" + $(this).attr("data-name");
-    var xhr = new XMLHttpRequest();
-    xhr.open('GET', url, true);        // 也可以使用POST方式，根据接口
-    xhr.responseType = "blob";    // 返回类型blob
+
+    var existURL = "/im/fileExist";
+    var formData = {
+      "md5": $(this).attr("data-md5"),
+      "name": $(this).attr("data-name")
+    };
 
     var that = this;
-    xhr.onload = function () {
-      // 请求完成
-      if (this.status === 200) {
-        // 返回200
-        var blob = this.response;
-        var reader = new FileReader();
-        reader.readAsDataURL(blob);    // 转换为base64，可以直接放入a表情href
-        reader.onload = function (e) {
-          // 转换完成，创建一个a标签用于下载
-          var a = document.createElement('a');
-          a.download = $(that).attr("data-name");
-          a.href = e.target.result;
-          $("body").append(a);    // 修复firefox中无法触发click
-          a.click();
-          $(a).remove();
-        }
+    $.post(existURL, formData, function (jsonData) {
+      if (jsonData.flag) {
+        var URL = "/im/download"
+          + "?md5=" + $(that).attr("data-md5")
+          + "&name=" + $(that).attr("data-name");
+
+        window.location.href = URL;
       } else {
         alert("文件已经不存在，请重新上传");
       }
-    };
-    // 发送ajax请求
-    xhr.send();
+    }, "json");
+
+
+    // IE不支持
+    // var xhr = new XMLHttpRequest();
+    // xhr.open('POST', url, true);        // 也可以使用POST方式，根据接口
+    // xhr.responseType = "blob";    // 返回类型blob
+
+    // var that = this;
+    // xhr.onload = function () {
+    //   // 请求完成
+    //   if (this.status === 200) {
+    //     // 返回200
+    //     var blob = this.response;
+    //     var reader = new FileReader();
+    //     reader.readAsDataURL(blob);    // 转换为base64，可以直接放入a表情href
+    //     reader.onload = function (e) {
+    //       // 转换完成，创建一个a标签用于下载
+    //       var a = document.createElement('a');
+    //       a.download = $(that).attr("data-name");
+    //       a.href = e.target.result;
+    //       $("body").append(a);    // 修复firefox中无法触发click
+    //       a.click();
+    //       $(a).remove();
+    //     }
+    //   } else {
+    //     alert("文件已经不存在，请重新上传");
+    //   }
+    // };
+    // // 发送ajax请求
+    // xhr.send();
   });
 
   function listChatMessage() {
@@ -527,9 +547,9 @@
 
     // 禁掉全局的拖拽功能。这样不会出现图片拖进页面的时候，把图片打开。
     disableGlobalDnd: true,
-    fileNumLimit: 1024,
-    fileSizeLimit: 1024 * 1024 * 1024,    // 200 M
-    fileSingleSizeLimit: 1024 * 1024 * 1024    // 50 M
+    fileNumLimit: 10,
+    fileSizeLimit: 200 * 1024 * 1024,    // 200 M
+    fileSingleSizeLimit: 5 * 1024 * 1024    // 50 M
   });
 
   // 当有文件被添加进队列的时候
@@ -590,6 +610,13 @@
     sendFileInfo(file.md5, file.name);
 
     $("html").scrollTop(999999);
+  });
+  uploader.on("error", function (type) {
+    if (type == "F_EXCEED_SIZE") {
+      alert("文件大小不能超过5M");
+    } else {
+      alert("上传出错！");
+    }
   });
   uploader.on('uploadError', function (file) {
     $('#' + file.id).find('p.state').text('上传出错');
