@@ -3,9 +3,9 @@ spring:
     store-type: none
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://localhost/webqq?useUnicode=yes&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://192.168.43.33/im-stomp?useUnicode=yes&characterEncoding=UTF-8&useSSL=false
     username: root
-    password: 123456
+    password: ylzinfo
   jpa:
     hibernate:
       ddl-auto: none
@@ -17,17 +17,18 @@ spring:
       max-file-size: 5MB
       max-request-size: 100MB
   rabbitmq:
-    username: guest
-    password: guest
-    host: localhost
+    username: hxb
+    password: hxb
+    host: 192.168.44.56
     port: 5672
   data:
     mongodb:
-      uri: mongodb://sso:841017@localhost:27017/sso
+      uri: mongodb://sso:sso@192.168.44.86:27017/sso
   redis:
-    host: localhost
-    password: 123456
+    host: 10.102.2.34
+    password: msyos
     port: 6379
+    database: 6
 
 mybatis:
   mapper-locations: classpath:mapper/*.xml

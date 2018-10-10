@@ -28,8 +28,6 @@ spring:
     host: 10.102.2.34
     password: msyos
     port: 6379
-    sysName: ylzinfo-cloud-sysmanager-srp
-    enable: true
     database: 6
 
 mybatis:
